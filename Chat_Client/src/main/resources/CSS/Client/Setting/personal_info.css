@@ -1,0 +1,40 @@
+.lbl-title{
+    -fx-text-fill: #8E5DF1;
+}
+.field{
+    -fx-border-radius: 15px;
+    -fx-border-color: #8E5DF1;
+    -fx-background-radius: 15px;
+}
+.date-picker {
+    -fx-background-radius: 15px;
+    -fx-border-radius: 15px;
+    -fx-border-color: #8E5DF1;
+    -fx-border-width: 0.5;
+}
+
+.date-picker .arrow-button {
+    -fx-background-radius: 0 15px 15px 0;
+    -fx-border-radius: 0 15px 15px 0;
+    -fx-border-color: #8E5DF1;
+    -fx-border-width: 0.5;
+    -fx-background-color: white;
+    -fx-cursor: hand;
+}
+.date-picker .text-field {
+    -fx-background-radius: 15px 0 0 15px;
+    -fx-border-radius: 15px 0 0 15px;
+    -fx-border-color: #8E5DF1;
+    -fx-border-width: 0.5;
+    -fx-background-color: white;
+    -fx-font-size: 18px;
+    -fx-font-family: Arial;
+}
+.btn-update{
+    -fx-background-color: #8E5DF1;
+    -fx-text-fill: white;
+}
+.btn-update:hover{
+    -fx-cursor: hand;
+    -fx-opacity: 0.7;
+}

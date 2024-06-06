@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+
+<AnchorPane prefHeight="650.0" prefWidth="340.0" styleClass="container" stylesheets="@../../../CSS/Client/menu_chat_bot.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.chat_client.Controller.Client.Menu.MenuChatBotController">
+   <children>
+      <ImageView fitHeight="186.0" fitWidth="267.0" layoutX="37.0" layoutY="24.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../../../Image/chat_bot.png" />
+         </image>
+      </ImageView>
+      <Label layoutX="21.0" layoutY="232.0" prefWidth="300.0" styleClass="introduce_label" text="A chatbot, also known as a &quot;conversation bot,&quot; is an artificial intelligence program designed to interact with users via text or voice. Chatbots have the ability to understand and respond to users' questions, provide information, assist, or perform specific tasks. Chatbots make it easy for users to find information by automatically answering questions and requests without human intervention or manual search." wrapText="true">
+         <font>
+            <Font name="Arial Bold" size="18.0" />
+         </font>
+      </Label>
+   </children>
+</AnchorPane>

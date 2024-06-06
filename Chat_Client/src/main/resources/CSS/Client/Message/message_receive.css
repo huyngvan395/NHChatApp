@@ -1,0 +1,12 @@
+.container{
+    -fx-padding: 5px 5px 5px 5px;
+}
+.label-mes{
+    -fx-background-color: rgba(0,0,0,0.1);
+    -fx-border-radius: 15px;
+    -fx-background-radius: 15px;
+    -fx-label-padding: 2px 10px 2px 5px;
+}
+name,.time{
+    -fx-text-fill: rgba(0,0,0,0.7);
+}

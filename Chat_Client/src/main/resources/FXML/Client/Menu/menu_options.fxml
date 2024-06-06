@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.String?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.shape.Circle?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
+
+<AnchorPane prefHeight="650.0" prefWidth="60.0" styleClass="container" stylesheets="@../../../CSS/Client/menu_options.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.chat_client.Controller.Client.Menu.MenuOptionsController">
+    <Button fx:id="chat_single" layoutX="13.0" layoutY="205.0" mnemonicParsing="false" styleClass="icon">
+        <graphic>
+            <FontIcon iconLiteral="fa-user" iconSize="25" />
+        </graphic>
+    </Button>
+    <Button fx:id="chat_group" layoutX="8.0" layoutY="246.0" mnemonicParsing="false" styleClass="icon">
+        <graphic>
+            <FontIcon iconLiteral="fa-users" iconSize="25" />
+        </graphic>
+    </Button>
+    <Button fx:id="chat_bot" layoutX="9.0" layoutY="291.0" mnemonicParsing="false" styleClass="icon">
+        <graphic>
+            <FontIcon iconLiteral="fa-reddit-alien" iconSize="25" />
+        </graphic>
+    </Button>
+    <Button fx:id="logout" layoutX="10.0" layoutY="602.0" mnemonicParsing="false" styleClass="icon">
+        <graphic>
+            <FontIcon iconLiteral="fa-sign-out" iconSize="25" />
+        </graphic>
+    </Button>
+    <Button fx:id="client_personal" layoutX="5.0" layoutY="22.0" mnemonicParsing="false" prefHeight="57.0" prefWidth="43.0" styleClass="button-user">
+        <graphic>
+            <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true">
+                <clip>
+                    <Circle centerX="25" centerY="25" radius="25" />
+                </clip>
+                <Image url="@../../../Image/userchatdefault.png" />
+            </ImageView>
+        </graphic>
+    </Button>
+   <Button fx:id="create_group" layoutX="4.0" layoutY="337.0" mnemonicParsing="false" prefHeight="48.0" prefWidth="50.0">
+      <graphic>
+          <ImageView fitHeight="36.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true" styleClass="icon">
+              <Image url="@../../../Image/create_group.png" />
+          </ImageView>
+      </graphic>
+      <styleClass>
+         <String fx:value="button-create-group" />
+         <String fx:value="icon" />
+      </styleClass>
+   </Button>
+</AnchorPane>

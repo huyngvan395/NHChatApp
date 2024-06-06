@@ -1,0 +1,54 @@
+.login-container{
+    -fx-background-color: white;
+    -fx-border-radius: 10px;
+    -fx-border-color: #8E5DF1;
+    -fx-background-radius: 10px;
+}
+.field{
+    -fx-border-radius: 15px;
+    -fx-border-color: #8E5DF1;
+    -fx-background-radius: 15px;
+}
+.wellcome-text{
+    -fx-text-fill: #8E5DF1;
+}
+.login-btn{
+    -fx-text-fill: white;
+    -fx-background-color: #8E5DF1;
+    -fx-border-radius: 10px;
+}
+.showpass{
+    -fx-text-fill: #8E5DF1;
+}
+.showpass:hover{
+    -fx-cursor: hand;
+}
+.login-btn:hover{
+    -fx-opacity: 0.7;
+    -fx-cursor: hand;
+}
+.date-picker {
+    -fx-background-radius: 15px;
+    -fx-border-radius: 15px;
+    -fx-border-color: #8E5DF1;
+    -fx-border-width: 0.5;
+}
+
+.date-picker .arrow-button {
+    -fx-background-radius: 0 15px 15px 0;
+    -fx-border-radius: 0 15px 15px 0;
+    -fx-border-color: #8E5DF1;
+    -fx-border-width: 0.5;
+    -fx-background-color: white;
+    -fx-cursor: hand;
+}
+
+.date-picker .text-field {
+    -fx-background-radius: 15px 0 0 15px;
+    -fx-border-radius: 15px 0 0 15px;
+    -fx-border-color: #8E5DF1;
+    -fx-border-width: 0.5;
+    -fx-background-color: white;
+    -fx-font-size: 18px;
+    -fx-font-family: Arial;
+}

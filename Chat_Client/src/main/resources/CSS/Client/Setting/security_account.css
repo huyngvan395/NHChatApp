@@ -1,0 +1,22 @@
+.lbl-title{
+    -fx-text-fill: #8E5DF1;
+}
+.field{
+    -fx-border-radius: 15px;
+    -fx-border-color: #8E5DF1;
+    -fx-background-radius: 15px;
+}
+.showpass{
+    -fx-text-fill: #8E5DF1;
+}
+.showpass:hover{
+    -fx-cursor: hand;
+}
+.btn-submit{
+    -fx-background-color: #8E5DF1;
+    -fx-text-fill: white;
+}
+.btn-submit:hover{
+    -fx-cursor: hand;
+    -fx-opacity: 0.7;
+}

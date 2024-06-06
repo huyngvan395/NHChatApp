@@ -1,0 +1,17 @@
+.btn-personal FontIcon{
+    -fx-fill: linear-gradient(to right, #00bf00, #0b670b);
+}
+.btn-security FontIcon{
+    -fx-fill: linear-gradient(to right, #6565da, #3175cd);
+}
+.btn-delete FontIcon{
+    -fx-fill: red;
+}
+Button{
+    -fx-background-color: transparent;
+    -fx-border-color: rgba(0,0,0,0.1);
+}
+Button:hover{
+    -fx-background-color: rgba(0,0,0,0.1);
+    -fx-cursor: hand;
+}

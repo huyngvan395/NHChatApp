@@ -1,0 +1,23 @@
+.container{
+    -fx-background-color: rgba(0,0,0,0.1);
+}
+.icon{
+    -fx-background-color: transparent;
+}
+.icon:hover{
+    -fx-background-color: rgba(0,0,0,0.2);
+}
+.button-user{
+    -fx-padding: 0;
+    -fx-background-color: transparent;
+}
+.button-create-group{
+    -fx-padding: 0;
+}
+.button-create-group ImageView{
+    -fx-start-margin: 0;
+    -fx-end-margin: 0;
+}
+Button:hover{
+    -fx-cursor: hand;
+}

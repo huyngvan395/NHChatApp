@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
+
+<AnchorPane prefHeight="600.0" prefWidth="250.0" stylesheets="@../../../CSS/Client/Setting/client_setting_menu.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.chat_client.Controller.Client.Setting.ClientSettingMenuController">
+   <Button fx:id="personal_info" layoutX="3.0" layoutY="93.0" mnemonicParsing="false" styleClass="btn-personal" text="Personal Information ">
+      <font>
+         <Font name="Arial" size="20.0" />
+      </font>
+      <graphic>
+         <FontIcon iconLiteral="fa-address-card" />
+      </graphic>
+   </Button>
+   <Button fx:id="security" alignment="TOP_LEFT" layoutX="3.0" layoutY="135.0" mnemonicParsing="false" prefHeight="36.0" prefWidth="245.0" styleClass="btn-security" text="Security">
+      <font>
+         <Font name="Arial" size="20.0" />
+      </font>
+      <graphic>
+         <FontIcon iconLiteral="fa-lock" />
+      </graphic>
+   </Button>
+   <Button fx:id="delete_acc" alignment="TOP_LEFT" layoutX="3.0" layoutY="498.0" mnemonicParsing="false" prefHeight="36.0" prefWidth="245.0" styleClass="btn-delete" text="Delete account">
+      <font>
+         <Font name="Arial" size="20.0" />
+      </font>
+      <graphic>
+         <FontIcon iconLiteral="fa-trash" />
+      </graphic>
+   </Button>
+</AnchorPane>

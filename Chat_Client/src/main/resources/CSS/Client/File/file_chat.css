@@ -1,0 +1,24 @@
+.container{
+    -fx-padding: 5px;
+}
+.container-file{
+    -fx-border-radius: 10px;
+    -fx-background-radius: 10px;
+    -fx-border-color: rgba(0,0,0,0.2);
+}
+.name,.time{
+    -fx-text-fill: rgba(0,0,0,0.7);
+}
+.button-download{
+    -fx-background-color: transparent;
+    -fx-border-color: rgba(0,0,0,0.2);
+    -fx-border-radius: 10px;
+    -fx-background-radius: 10px;
+}
+.button-download:hover{
+    -fx-cursor: hand;
+    -fx-background-color: rgba(0,0,0,0.1);
+}
+.button-download FontIcon{
+    -fx-fill: rgba(0,0,0,0.8);
+}
