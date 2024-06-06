@@ -4,6 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
+import io.github.cdimascio.dotenv.Dotenv;
 
 import java.io.IOException;
 import java.net.URI;
@@ -14,10 +15,12 @@ import java.util.Scanner;
 
 public class ChatBotAPI {
     public static String sendMessageToAPI(String message) {
+        Dotenv dotenv = Dotenv.load();
+        String apiKey = dotenv.get("API_Key");
         // Tạo yêu cầu API với tin nhắn được truyền vào
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("https://chat-gpt26.p.rapidapi.com/"))
-                .header("x-rapidapi-key", "cae62bb29emsh2b7fbec48db98b5p1d0127jsn88fa792857bc")
+                .header("x-rapidapi-key", apiKey)
                 .header("x-rapidapi-host", "chat-gpt26.p.rapidapi.com")
                 .header("Content-Type", "application/json")
                 .method("POST", HttpRequest.BodyPublishers.ofString("{\"model\":\"gpt-3.5-turbo\",\"messages\":[{\"role\":\"user\",\"content\":\"" + message + "\"}]}"))
