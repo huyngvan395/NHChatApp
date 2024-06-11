@@ -1,6 +1,7 @@
 package org.example.chat_client;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.stage.Stage;
 import org.example.chat_client.Model.Model;
 
@@ -14,6 +15,17 @@ public class App extends Application {
 
     @Override
     public void start(Stage primaryStage) throws IOException {
-        Model.getInstance().getViewFactory().showClientPage();
+        new Thread(()->{
+            Platform.runLater(()->{
+                Model.getInstance().getViewFactory().showLoginPage();
+            });
+        }).start();
     }
+
+    public void stop() throws Exception {
+        super.stop();
+        Model.getInstance().getSocketClient().sendMessage("remove");
+        Model.getInstance().setRunning(false);
+    }
+
 }

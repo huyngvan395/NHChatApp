@@ -11,33 +11,31 @@
 <?import javafx.scene.text.Font?>
 <?import org.kordamp.ikonli.javafx.FontIcon?>
 
-
-<AnchorPane prefHeight="650.0" prefWidth="340.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="org.example.chat_client.Controller.Client.Menu.MenuChatSingleController">
-   <TextField layoutX="15.0" layoutY="10.0" prefHeight="26.0" prefWidth="280.0" promptText="Search name">
+<AnchorPane prefHeight="650.0" prefWidth="340.0" stylesheets="@../../../CSS/Client/menu_chat.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.chat_client.Controller.Client.Menu.MenuChatSingleController">
+   <TextField fx:id="search_field" layoutX="15.0" layoutY="10.0" prefHeight="26.0" prefWidth="280.0" promptText="Search name">
       <font>
-         <Font name="Arial" size="18.0"/>
+         <Font name="Arial" size="18.0" />
       </font>
    </TextField>
-   <Button layoutX="295.0" layoutY="10.0" mnemonicParsing="false" prefHeight="34.4">
+   <Button fx:id="search_btn" layoutX="295.0" layoutY="10.0" mnemonicParsing="false" prefHeight="34.4" styleClass="button_search">
       <graphic>
-         <FontIcon iconLiteral="fa-search" iconSize="25"/>
+         <FontIcon iconLiteral="fa-search" iconSize="25" />
       </graphic>
    </Button>
-   <ListView layoutX="3.0" layoutY="50.0" orientation="HORIZONTAL" prefHeight="90.0" prefWidth="334.0"/>
-   <ListView layoutX="3.0" layoutY="158.0" prefHeight="490.0" prefWidth="335.0"/>
+   <ListView fx:id="listView_ClientOnline" layoutX="3.0" layoutY="50.0" orientation="HORIZONTAL" prefHeight="90.0" prefWidth="334.0" styleClass="listView" />
+   <ListView fx:id="listView_ClientCell" layoutX="3.0" layoutY="158.0" prefHeight="490.0" prefWidth="335.0" styleClass="listView" />
    <Line endX="218.60000610351562" layoutX="115.0" layoutY="150.0" startX="-108.60001373291016" strokeWidth="2.0">
       <stroke>
          <RadialGradient centerX="0.5" centerY="0.5" radius="0.5">
             <stops>
                <Stop>
                   <color>
-                     <Color red="0.6000000238418579" green="0.5533333420753479" blue="0.5533333420753479"/>
+                     <Color red="0.6000000238418579" green="0.5533333420753479" blue="0.5533333420753479" />
                   </color>
                </Stop>
                <Stop offset="1.0">
                   <color>
-                     <Color red="1.0" green="1.0" blue="1.0"/>
+                     <Color red="1.0" green="1.0" blue="1.0" />
                   </color>
                </Stop>
             </stops>

@@ -45,11 +45,15 @@ public class SendMail {
             message.setFrom(new InternetAddress(email,"NH Chat App"));
             message.setRecipient(Message.RecipientType.TO, new InternetAddress(user_mail));
             message.setSubject("Verification Code");
-            String content= "<html><body style='font-family: Arial, sans-serif; background: #104E8B;color: white; border-radius:4px; margin:5px 180px'>"+
-                            "<h2 style=' margin:10px 20px '>Your confirmation code is</h2>"+
-                            "<h1 style=' letter-spacing:3px; display:inline-block; background-color:#8E5DF1; margin:0 20px; justify-content:center; border-radius: 5px'>"+code+"</h1>"+
-                            "<h2 style=' margin:10px 20px'>Return to NH Chat App and enter the above code to change your password</h2>"+
-                            "<body><html>";
+            String content=  "<body style='font-family: Arial, sans-serif; background: #104E8B;color: white; border-radius:4px;'>" +
+                    "<div style='width: 300px; margin:auto; padding:20px 0'>" +
+                    "<h2 style='text-align: center;'>Your confirmation code is</h2>" +
+                    "<div style='text-align: center; background-color:#8E5DF1; border-radius: 5px; padding: 10px;'>" +
+                    "<h1 style='letter-spacing: 3px; display: inline-block; margin: 0;'>"+code+"</h1>" +
+                    "</div>" +
+                    "<h2 style='text-align: center;color:white'>Return to NH Chat App and enter the above code to change your password</h2>" +
+                    "</div>" +
+                    "</body>";
             message.setContent(content,"text/html");
             Transport.send(message);
 //            System.out.println("Message sent successfully");

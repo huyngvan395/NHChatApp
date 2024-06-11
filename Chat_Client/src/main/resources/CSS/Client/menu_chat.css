@@ -1,0 +1,13 @@
+.listView{
+    -fx-background-color: white;
+}
+.button_search{
+    -fx-background-color: transparent;
+}
+.button_search FontIcon{
+    -fx-fill: rgba(0,0,0,0.7);
+}
+.button_search:hover{
+    -fx-background-color: rgba(0,0,0,0.2);
+    -fx-cursor: hand;
+}

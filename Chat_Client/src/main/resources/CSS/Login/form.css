@@ -52,3 +52,11 @@
     -fx-font-size: 18px;
     -fx-font-family: Arial;
 }
+.code-field{
+    -fx-border-color: #8E5DF1;
+    -fx-border-radius: 15px;
+    -fx-background-radius: 15px;
+}
+.avatar-set:hover{
+    -fx-cursor: hand;
+}

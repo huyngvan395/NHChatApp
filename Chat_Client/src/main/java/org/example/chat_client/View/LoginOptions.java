@@ -2,5 +2,8 @@ package org.example.chat_client.View;
 
 public enum LoginOptions {
     Signup,
-    Login
+    Login,
+    ForgotPassword,
+    Verification,
+    ChangePassword
 }

@@ -16,9 +16,13 @@ public class ChatPageController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         Model.getInstance().getViewFactory().getMenuChatOptions().addListener((observable, oldValue, newValue) -> {
             switch (newValue) {
-                case Bot -> chat_page.setCenter(Model.getInstance().getViewFactory().getMenuChatBot());
+                case Bot -> {
+                    chat_page.setCenter(Model.getInstance().getViewFactory().getMenuChatBot());
+                    chat_page.setRight(Model.getInstance().getViewFactory().getMessageChatBoxBot());
+                }
                 case Single -> chat_page.setCenter(Model.getInstance().getViewFactory().getMenuChatSingle());
                 case Group -> chat_page.setCenter(Model.getInstance().getViewFactory().getMenuChatGroup());
+                default -> chat_page.setRight(Model.getInstance().getViewFactory().getMessageChatBox());
             }
         });
     }

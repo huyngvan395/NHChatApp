@@ -9,22 +9,29 @@
 <?import javafx.scene.text.Font?>
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefWidth="600.0" styleClass="container" stylesheets="@../../../CSS/Client/Message/message_receive.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.chat_client.Controller.Client.Message.MessageGroupReceiveController">
-    <VBox alignment="CENTER_LEFT" layoutX="62.0" layoutY="22.0" prefWidth="400.0">
-        <Label styleClass="label-mes" text="Hello" wrapText="true">
+    <VBox alignment="CENTER_LEFT" layoutX="65.0" layoutY="46.0" prefWidth="400.0">
+        <Label fx:id="message" styleClass="label-mes" text="Hello" wrapText="true">
             <font>
                 <Font name="Arial" size="18.0" />
             </font>
         </Label>
     </VBox>
-    <Label layoutX="244.0" layoutY="6.0" styleClass="time" text="22:20">
-        <font>
-            <Font name="Arial Bold" size="14.0" />
-        </font>
-    </Label>
-    <ImageView fitHeight="50.0" fitWidth="50.0" layoutX="4.0" layoutY="20.0" pickOnBounds="true">
+    <ImageView fx:id="image_avatar" fitHeight="50.0" fitWidth="50.0" layoutX="5.0" layoutY="42.0" pickOnBounds="true">
         <clip>
-            <Circle centerX="25" centerY="25" radius="25"/>
+            <Circle centerX="25" centerY="25" radius="25" />
         </clip>
-        <Image url="@../../../Image/userchatdefault.png"/>
+        <Image url="@../../../Image/userchatdefault.png" />
     </ImageView>
+    <VBox alignment="CENTER" layoutY="6.0" prefWidth="600.0">
+        <Label fx:id="time_created" styleClass="time" text="22:20">
+            <font>
+                <Font name="Arial Bold" size="14.0" />
+            </font>
+        </Label>
+    </VBox>
+   <Label fx:id="name" layoutX="71.0" layoutY="25.0" styleClass="time" text="Name">
+      <font>
+         <Font name="Arial Bold" size="14.0" />
+      </font>
+   </Label>
 </AnchorPane>

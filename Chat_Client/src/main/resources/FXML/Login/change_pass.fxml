@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="600.0" prefWidth="800.0" stylesheets="@../../CSS/Login/form.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.chat_client.Controller.Login.ChangePassController">
+    <ImageView fitHeight="600.0" fitWidth="800.0" pickOnBounds="true" preserveRatio="true">
+        <Image url="@../../Image/bg_appchat.png" />
+    </ImageView>
+    <AnchorPane layoutX="150.0" layoutY="50.0" prefHeight="500.0" prefWidth="500.0" styleClass="login-container">
+        <ImageView fitHeight="422.0" fitWidth="399.0" layoutX="51.0" layoutY="-61.0" pickOnBounds="true" preserveRatio="true">
+            <Image url="@../../Image/NHChatAppTitle.png" />
+        </ImageView>
+        <TextField fx:id="password_shown" layoutX="111.0" layoutY="176.0" prefHeight="38.0" prefWidth="279.0" promptText="New Password" styleClass="field">
+            <font>
+                <Font name="Arial" size="18.0" />
+            </font>
+        </TextField>
+        <PasswordField fx:id="password" layoutX="111.0" layoutY="176.0" prefHeight="38.0" prefWidth="279.0" promptText="New Password" styleClass="field">
+            <font>
+                <Font name="Arial" size="18.0" />
+            </font>
+        </PasswordField>
+        <Button fx:id="submit_btn" layoutX="183.0" layoutY="328.0" mnemonicParsing="false" prefHeight="36.0" prefWidth="154.0" styleClass="login-btn" text="Submit">
+            <font>
+                <Font name="Arial" size="20.0" />
+            </font>
+        </Button>
+        <CheckBox fx:id="show_pass" layoutX="214.0" layoutY="294.0" mnemonicParsing="false" styleClass="showpass" text="ShowPass">
+            <font>
+                <Font name="Arial" size="14.0" />
+            </font>
+        </CheckBox>
+        <TextField fx:id="confirm_pass_shown" layoutX="111.0" layoutY="240.0" prefHeight="38.0" prefWidth="279.0" promptText="New Confirm Password" styleClass="field">
+            <font>
+                <Font name="Arial" size="18.0" />
+            </font>
+        </TextField>
+        <PasswordField fx:id="confirm_pass" layoutX="111.0" layoutY="240.0" prefHeight="38.0" prefWidth="279.0" promptText="New Confirm Password" styleClass="field">
+            <font>
+                <Font name="Arial" size="18.0" />
+            </font>
+        </PasswordField>
+    </AnchorPane>
+</AnchorPane>
