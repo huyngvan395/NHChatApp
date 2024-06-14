@@ -43,6 +43,6 @@
         </AnchorPane>
     </bottom>
     <center>
-        <VBox prefHeight="516.0" prefWidth="601.0" BorderPane.alignment="CENTER" />
+        <VBox fx:id="content_chat" prefHeight="516.0" prefWidth="601.0" BorderPane.alignment="CENTER" />
     </center>
 </BorderPane>

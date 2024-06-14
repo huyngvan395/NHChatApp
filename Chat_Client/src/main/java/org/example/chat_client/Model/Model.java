@@ -1,37 +1,46 @@
 package org.example.chat_client.Model;
 
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-import javafx.application.Platform;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import org.example.chat_client.View.ViewFactory;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
+
 
 public class Model {
     private static Model model;
     private final ViewFactory viewFactory;
     private final SocketClient socketClient;
     private ObservableList<Client> clientOnlineList;
-    private final Gson gson;
+    private ObservableList<Client> listClient;
     private Client currentClient;
-    private boolean running;
+    private volatile boolean running;
+    private ObjectProperty<Client> targetClient=new SimpleObjectProperty<>();
+    private final BlockingQueue<String> messageResponseQueue;
+    private final MessageHandler messageHandler;
 
     private Model() throws IOException {
         this.viewFactory = new ViewFactory();
         this.socketClient= new SocketClient();
         this.clientOnlineList= FXCollections.observableArrayList();
-        this.gson = new Gson();
+        this.listClient=FXCollections.observableArrayList();
         running = true;
+        this.messageHandler = new MessageHandler();
+        this.messageResponseQueue = new LinkedBlockingQueue<>(1);
+        this.messageHandler.addMessageListener(new ClientOnlineListUpdateListener(clientOnlineList));
+        this.messageHandler.addMessageListener(new ClientListUpdateListener(listClient));
     }
 
     public static synchronized Model getInstance() {
         try{
-            if (model == null) {
-                model = new Model();
+            if(model==null){
+                model=new Model();
             }
         }catch(IOException e){
             e.printStackTrace();
@@ -47,43 +56,44 @@ public class Model {
         return socketClient;
     }
 
-    public void addClientOnline(Client client) {
-        clientOnlineList.add(client);
-    }
-
-    public void removeClientOnline(String ClientID) {
-        this.clientOnlineList.removeIf(client -> client.getClientID().equals(ClientID));
-    }
-
     public ObservableList<Client> getClientOnlineList() {
         return clientOnlineList;
     }
 
-    public void updateClientOnline(){
+    public ObservableList<Client> getListClient(){
+        return listClient;
+    }
+
+    public void startMessageReader() {
+        new Thread(() -> {
+            while (running) {
+                try {
+                    String message = socketClient.receiveResponse();
+                    System.out.println(message);
+                    if (message != null && !message.trim().isEmpty()) {
+                        messageResponseQueue.put(message);
+                    }
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+
+    }
+
+    public void processMessages() {
         new Thread(()->{
-            while(running){
-                String message=Model.getInstance().getSocketClient().receiveResponse();
-                if (message == null || message.trim().isEmpty()) {
-                    continue;
+            while (running) {
+                String message= null;
+                try {
+                    message = messageResponseQueue.take();
+                    if (message != null && !message.trim().isEmpty()) {
+                        this.messageHandler.handleMessage(message);
+                    }
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
-                String[] messageParts=message.split("/");
-                if(message.startsWith("newClient")){
-                    System.out.println(message);
-                    Platform.runLater(()->{
-                        Client newClient=gson.fromJson(messageParts[1], Client.class);
-                        this.addClientOnline(newClient);
-                    });
-                }
-                else if(message.startsWith("listOnline")){
-                    System.out.println(message);
-                    Platform.runLater(()->{
-                        List<Client> clientList=gson.fromJson(messageParts[1], new TypeToken<List<Client>>(){}.getType());
-                        this.clientOnlineList.setAll(clientList);
-                    });
-                }
-                else if(message.startsWith("removeClientOnline")){
-                    Platform.runLater(()->this.removeClientOnline(messageParts[1]));
-                }
+
             }
         }).start();
     }
@@ -96,11 +106,29 @@ public class Model {
         this.currentClient = currentClient;
     }
 
+    public MessageHandler getMessageHandler() {
+        return messageHandler;
+    }
+
+    public ObjectProperty<Client> targetClientObjectProperty(){
+        return targetClient;
+    }
+
     public void setRunning(boolean running) {
         this.running = running;
     }
 
     public boolean isRunning() {
         return running;
+    }
+
+    public void resetData(){
+        this.currentClient=null;
+        this.listClient.clear();
+        this.clientOnlineList.clear();
+    }
+
+    public BlockingQueue<String> getMessageResponseQueue() {
+        return messageResponseQueue;
     }
 }

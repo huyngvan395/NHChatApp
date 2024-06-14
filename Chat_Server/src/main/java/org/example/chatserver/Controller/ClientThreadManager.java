@@ -17,16 +17,25 @@ public class ClientThreadManager {
         gson=new Gson();
     }
 
-    public synchronized void addClientHandler(ClientThreadHandle clientHandler) {
+    public void addClientHandler(ClientThreadHandle clientHandler) {
         clientHandlers.add(clientHandler);
     }
 
-    public synchronized void removeClientHandler(ClientThreadHandle clientHandler) {
+    public void removeClientHandler(ClientThreadHandle clientHandler) {
         clientHandler.stopClient();
         clientHandlers.remove(clientHandler);
     }
 
-    public synchronized void singleChat(String receiveID, String message) {
+    public void singleChat(String receiverID, String message) {
+        System.out.println(receiverID);
+        for (ClientThreadHandle clientHandler : clientHandlers) {
+            if(clientHandler.getClientID().equals(receiverID)){
+                clientHandler.writeMessage(message);
+            }
+        }
+    }
+
+    public void chatbot(String receiveID, String message) {
         for (ClientThreadHandle clientHandler : clientHandlers) {
             if(clientHandler.getClientID().equals(receiveID)){
                 clientHandler.writeMessage(message);
@@ -34,13 +43,13 @@ public class ClientThreadManager {
         }
     }
 
-    public synchronized String sendCode(String email){
+    public String sendCode(String email){
         String code= SendMail.randomCode();
         SendMail.sendCode(email, code);
         return code;
     }
 
-    public synchronized void sendInfoNewClientToOthers(Client newClient){
+    public void sendInfoNewClientToOthers(Client newClient){
         String newClientJson=gson.toJson(newClient);
         for (ClientThreadHandle clientHandler : clientHandlers) {
             if(!clientHandler.getClientID().equals(newClient.getClientID())){
@@ -50,24 +59,31 @@ public class ClientThreadManager {
         System.out.println("Sent new client to other clients");
     }
 
-    public synchronized void sendListOnlineClient(ClientThreadHandle clientHandler){
-        List<Client> listClient=new ArrayList<>();
+    public void sendListOnlineClient(ClientThreadHandle clientHandler){
+        List<Client> listClientTemp=new ArrayList<>();
         for(Client client: Model.getInstance().getClientOnlineList()){
             if(!clientHandler.getClientID().equals(client.getClientID())){
-                listClient.add(client);
+                listClientTemp.add(client);
             }
         }
-        String listClientOnlineJson=gson.toJson(listClient);
+        String listClientOnlineJson=gson.toJson(listClientTemp);
         clientHandler.writeMessage("listOnline/"+listClientOnlineJson);
     }
 
-    public synchronized void sendRemoveClient(String message){
+    public void sendRemoveClient(String message){
         for (ClientThreadHandle clientHandler : clientHandlers) {
             clientHandler.writeMessage(message);
         }
     }
 
-    public synchronized void receiveFile(){}
+    public void sendListClient(ClientThreadHandle clientThreadHandle){
+        List<Client> listClient=Model.getInstance().getListClientDAO().getListClient();
+        listClient.removeIf(client -> client.getClientID().equals(clientThreadHandle.getClientID()));
+        String listClientJson=gson.toJson(listClient);
+        clientThreadHandle.writeMessage("listClient/"+listClientJson);
+    }
+
+    public void receiveFile(){}
 
 //    public synchronized void stopAllClients() {
 //        for (ClientThreadHandle clientHandler : clientHandlers) {

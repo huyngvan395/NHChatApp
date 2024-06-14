@@ -10,6 +10,8 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import org.example.chat_client.Model.Client;
 import org.example.chat_client.Model.Model;
+import org.example.chat_client.View.ChatOption;
+import org.example.chat_client.View.ClientConversationCellFactory;
 import org.example.chat_client.View.ClientOnlineCellFactory;
 
 import java.net.URL;
@@ -28,22 +30,46 @@ public class MenuChatSingleController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         setItemListView_ClientOnline();
-        Model.getInstance().updateClientOnline();
+        setItemListView_Client();
         listenerOnlineList();
+        listenerEventClickClientCell();
     }
 
     public void setItemListView_ClientOnline() {
-        ObservableList<Client> list = Model.getInstance().getClientOnlineList();
-        listView_ClientOnline.setItems(list);
+        ObservableList<Client> listOnline = Model.getInstance().getClientOnlineList();
+        listView_ClientOnline.setItems(listOnline);
         listView_ClientOnline.setCellFactory(listView->new ClientOnlineCellFactory());
     }
 
     public void listenerOnlineList(){
-        Platform.runLater(()->{
-            Model.getInstance().getClientOnlineList().addListener((ListChangeListener<? super Client>) change->{
-                setItemListView_ClientOnline();
+        Model.getInstance().getClientOnlineList().addListener((ListChangeListener<? super Client>) change -> {
+            Platform.runLater(()->{
+                while (change.next()) {
+                    if (change.wasAdded() || change.wasRemoved() || change.wasUpdated()) {
+                        setItemListView_ClientOnline();
+                    }
+                }
             });
         });
+    }
+
+    public void setItemListView_Client(){
+        ObservableList<Client> list = Model.getInstance().getListClient();
+        listView_ClientCell.setItems(list);
+        listView_ClientCell.setCellFactory(listView->new ClientConversationCellFactory());
+    }
+
+    public void listenerEventClickClientCell(){
+        listView_ClientCell.getSelectionModel().selectedItemProperty().addListener(((observable, oldValue, newValue) ->{
+            Platform.runLater(()->{
+                getInfoTargetClient(newValue);
+                System.out.println(Model.getInstance().targetClientObjectProperty().get().getName());
+            });
+        }));
+    }
+
+    private void getInfoTargetClient(Client client) {
+        Model.getInstance().targetClientObjectProperty().set(client);
     }
 
 }

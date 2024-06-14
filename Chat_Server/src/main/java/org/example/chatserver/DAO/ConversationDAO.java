@@ -12,7 +12,7 @@ public class ConversationDAO {
         PreparedStatement ps=null;
         ResultSet rs=null;
         try{
-            ps=con.prepareStatement("select ConversationID from conversation_single where (SenderID=? AND ReceiverID=?) OR (SenderID=? AND ReceiverID=?)");
+            ps=con.prepareStatement("select ConversationID from conversation_single where (ClientID1=? AND ClientID2=?) OR (ClientID2=? AND ClientID1=?)");
             ps.setString(1, SenderID);
             ps.setString(2, ReceiverID);
             ps.setString(3,ReceiverID);
@@ -27,11 +27,11 @@ public class ConversationDAO {
         return null;
     }
 
-    public boolean checkConversationExists(String SenderID, String ReceiverID){
+    public boolean checkConversationExist(String SenderID, String ReceiverID){
         PreparedStatement ps = null;
         ResultSet rs = null;
         try{
-            ps=con.prepareStatement("select * from conversation_single(ClientID1,ClientID2) where (SenderID=? AND ReceiverID=?) OR (SenderID=? AND ReceiverID=?)");
+            ps=con.prepareStatement("select ConversationID from conversation_single where (ClientID1=? AND ClientID2=?) OR (ClientID2=? AND ClientID1=?)");
             ps.setString(1, SenderID);
             ps.setString(2, ReceiverID);
             ps.setString(3, ReceiverID);

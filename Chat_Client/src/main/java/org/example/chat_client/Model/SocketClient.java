@@ -50,7 +50,7 @@ public class SocketClient {
         File selectedFile = fileChooser.showOpenDialog(stage);
         if (selectedFile != null) {
             try{
-                File directory = new File("storage/File");
+                File directory = new File("client_storage/File");
                 File targetFile = new File(directory, selectedFile.getName());
                 byte[] fileNameBytes = selectedFile.getName().getBytes(StandardCharsets.UTF_8);
                 outStream.write(fileNameBytes.length);

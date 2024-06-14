@@ -47,6 +47,9 @@ public class MenuOptionsController implements Initializable {
 
     public void Logout(){
         Model.getInstance().getViewFactory().closeStage((Stage) logout.getScene().getWindow());
+        Model.getInstance().getSocketClient().sendMessage("logout");
+        Model.getInstance().setRunning(false);
+        Model.getInstance().resetData();
         Model.getInstance().getViewFactory().showLoginPage();
     }
 

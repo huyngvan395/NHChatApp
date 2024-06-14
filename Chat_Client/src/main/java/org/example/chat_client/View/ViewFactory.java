@@ -16,8 +16,6 @@ import org.example.chat_client.Controller.Client.Image.ImageSingleReceiveControl
 import org.example.chat_client.Controller.Client.Message.MessageGroupReceiveController;
 import org.example.chat_client.Controller.Client.Message.MessageSendController;
 import org.example.chat_client.Controller.Client.Message.MessageSingleReceiveController;
-import org.example.chat_client.Controller.Login.ForgotPassController;
-import org.example.chat_client.Controller.Login.VerificationController;
 import org.example.chat_client.Model.Model;
 
 import java.io.IOException;
@@ -28,6 +26,7 @@ public class ViewFactory {
         this.MenuSettingOptions = new SimpleObjectProperty<>();
         this.MenuChatOptions=new SimpleObjectProperty<>();
         this.LoginOptions=new SimpleObjectProperty<>();
+        this.ChatOption=new SimpleObjectProperty<>();
     }
 
     public void showLoginPage(){
@@ -163,7 +162,7 @@ public class ViewFactory {
 
     public BorderPane getMessageChatBox() {
         try{
-            MessageChatBox=new FXMLLoader(getClass().getResource("/FXML/Client/Message/message_chat_box.fxml")).load();
+            MessageChatBox=new FXMLLoader(getClass().getResource("/FXML/Client/message_chat_single_box.fxml")).load();
         }catch (IOException e){
             e.printStackTrace();
         }
@@ -210,13 +209,20 @@ public class ViewFactory {
         return MenuSettingOptions;
     }
 
+//    -------------------------menu-chat----------------------------
+    private final ObjectProperty<ChatOption> ChatOption;
+
+    public ObjectProperty<ChatOption> getChatOption(){
+        return ChatOption;
+    }
+
 //    --------------------------message-contain--------------------------------
 //    text
     private AnchorPane MessageSend;
     private AnchorPane MessageSingleReceive;
     private AnchorPane MessageGroupReceive;
 
-    public AnchorPane getMessageSend(String time_created, String message){
+    public AnchorPane getMessageSend(String message, String time_created){
         try{
             FXMLLoader fxmlLoader=new FXMLLoader(getClass().getResource("/FXML/Client/Message/message_send.fxml"));
             MessageSend=fxmlLoader.load();
@@ -229,7 +235,7 @@ public class ViewFactory {
         return MessageSend;
     }
 
-    public AnchorPane getMessageSingleReceive(String time_created, String message){
+    public AnchorPane getMessageSingleReceive(String message, String time_created){
         try{
             FXMLLoader fxmlLoader=new FXMLLoader(getClass().getResource("/FXML/Client/Message/message_single_receive.fxml"));
             MessageSingleReceive=fxmlLoader.load();
@@ -274,7 +280,7 @@ public class ViewFactory {
         return ImageSend;
     }
 
-    public AnchorPane getImageSingleReceive(String time_created, String image) {
+    public AnchorPane getImageSingleReceive( String image, String time_created) {
         try{
             FXMLLoader fxmlLoader=new FXMLLoader(getClass().getResource("/FXML/Client/Image/image_single_receive.fxml"));
             ImageSingleReceive=fxmlLoader.load();

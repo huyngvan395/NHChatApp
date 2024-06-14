@@ -19,15 +19,18 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Base64;
 
 public class ClientThreadHandle implements Runnable{
     private final Socket clientSocket;
     private BufferedReader inText;
     private BufferedWriter outText;
-    private BufferedInputStream inputStream;
-    private BufferedOutputStream outputStream;
+//    private BufferedInputStream inputStream;
+//    private BufferedOutputStream outputStream;
     private boolean running;
     private String clientID;
+    private final String directoryImage="server_storage/Image";
 
     public ClientThreadHandle(Socket clientSocket) throws IOException {
         this.clientSocket = clientSocket;
@@ -40,8 +43,8 @@ public class ClientThreadHandle implements Runnable{
         try{
             this.inText = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
             this.outText = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream()));
-            this.inputStream = new BufferedInputStream(clientSocket.getInputStream());
-            this.outputStream = new BufferedOutputStream(clientSocket.getOutputStream());
+//            this.inputStream = new BufferedInputStream(clientSocket.getInputStream());
+//            this.outputStream = new BufferedOutputStream(clientSocket.getOutputStream());
         }catch(IOException e){
             e.printStackTrace();
         }
@@ -51,6 +54,7 @@ public class ClientThreadHandle implements Runnable{
             while (running && (message = inText.readLine()) != null) {
                 System.out.println(message+"\n");
                 String[] messageParts = message.split("/");
+                String[] messageParts1 = message.split("\\|");
                 if(message.startsWith("forgot-pass")){
                     handleForgotPass(messageParts);
                 }
@@ -64,10 +68,10 @@ public class ClientThreadHandle implements Runnable{
                     handleSingleMessage(messageParts);
                 }
                 else if(message.startsWith("single-file")){
-                    handleSingleFile(messageParts);
+                    handleSingleFile(messageParts1);
                 }
                 else if(message.startsWith("single-image")){
-                    handleSingleImage(messageParts);
+                    handleSingleImage(messageParts1);
                 }
                 else if(message.startsWith("change-pass")){
                     handleChangePass(messageParts);
@@ -77,6 +81,11 @@ public class ClientThreadHandle implements Runnable{
                 }
                 else if(message.startsWith("chatbot")){
                     handleChatBotMessage(messageParts);
+                }
+                else if(message.startsWith("logout")){
+                    Model.getInstance().getClientThreadManager().sendRemoveClient("removeClientOnline/"+clientID);
+                    Model.getInstance().removeClientOnlineList(clientID);
+                    this.clientID="";
                 }
                 else if(message.startsWith("remove")){
                     running=false;
@@ -138,6 +147,7 @@ public class ClientThreadHandle implements Runnable{
             Model.getInstance().getClientThreadManager().sendInfoNewClientToOthers(client);
             Model.getInstance().getClientThreadManager().sendListOnlineClient(this);
             Model.getInstance().addClientOnlineList(client);
+            Model.getInstance().getClientThreadManager().sendListClient(this);
             System.out.println("Client logged in and info sent to others");
         } else {
             String messageToClient = "login-failed";
@@ -157,19 +167,19 @@ public class ClientThreadHandle implements Runnable{
     }
 
     public void handleSingleMessage(String[] messageParts) throws IOException{
-        String SenderID = messageParts[2];
-        String messageSendFromClient = messageParts[3];
-        String ReceiverID = messageParts[4];
-        String timeSend= messageParts[5];
-        Model.getInstance().getClientThreadManager().singleChat(ReceiverID, messageSendFromClient);
-        if(!Model.getInstance().getConversationDAO().checkConversationExists(SenderID, ReceiverID)){
-            Model.getInstance().getConversationDAO().addConversationSingle(SenderID, ReceiverID);
-            String ID=Model.getInstance().getConversationDAO().getConversationSingleID(SenderID, ReceiverID);
-            Model.getInstance().getMessageDAO().addMessageSingle(ID, SenderID, messageSendFromClient, null,null,LocalDateTime.parse(timeSend));
-            Model.getInstance().getClientThreadManager().singleChat(ReceiverID, messageSendFromClient);
+        String messageSendFromClient = messageParts[1];
+        String ReceiverID = messageParts[2];
+        String timeSend= messageParts[3];
+        String messageSend="single-message/"+ReceiverID+"/"+messageSendFromClient+"/"+timeSend+"/"+clientID;
+        if(!Model.getInstance().getConversationDAO().checkConversationExist(clientID, ReceiverID)){
+            Model.getInstance().getConversationDAO().addConversationSingle(clientID, ReceiverID);
+            String ID=Model.getInstance().getConversationDAO().getConversationSingleID(clientID, ReceiverID);
+            Model.getInstance().getMessageDAO().addMessageSingle(ID, clientID, messageSendFromClient, "Text",LocalDateTime.parse(timeSend));
+            Model.getInstance().getClientThreadManager().singleChat(ReceiverID, messageSend);
         }else{
-            String ID=Model.getInstance().getConversationDAO().getConversationSingleID(SenderID, ReceiverID);
-            Model.getInstance().getMessageDAO().addMessageSingle(ID, SenderID, messageSendFromClient, null,null,LocalDateTime.parse(timeSend));
+            String ID=Model.getInstance().getConversationDAO().getConversationSingleID(clientID, ReceiverID);
+            Model.getInstance().getMessageDAO().addMessageSingle(ID, clientID, messageSendFromClient, "Text",LocalDateTime.parse(timeSend));
+            Model.getInstance().getClientThreadManager().singleChat(ReceiverID, messageSend);
         }
     }
 
@@ -179,31 +189,41 @@ public class ClientThreadHandle implements Runnable{
         String ReceiverID = messageParts[4];
         String timeSend= messageParts[5];
         Model.getInstance().getClientThreadManager().singleChat(ReceiverID, messageSendFromClient);
-        if(!Model.getInstance().getConversationDAO().checkConversationExists(SenderID, ReceiverID)){
+        if(!Model.getInstance().getConversationDAO().checkConversationExist(SenderID, ReceiverID)){
             Model.getInstance().getConversationDAO().addConversationSingle(SenderID, ReceiverID);
             String ID=Model.getInstance().getConversationDAO().getConversationSingleID(SenderID, ReceiverID);
-            Model.getInstance().getMessageDAO().addMessageSingle(ID, SenderID, null, messageSendFromClient,null,LocalDateTime.parse(timeSend));
+            Model.getInstance().getMessageDAO().addMessageSingle(ID, clientID, messageSendFromClient,"File",LocalDateTime.parse(timeSend));
             Model.getInstance().getClientThreadManager().singleChat(ReceiverID, messageSendFromClient);
         }else{
             String ID=Model.getInstance().getConversationDAO().getConversationSingleID(SenderID, ReceiverID);
-            Model.getInstance().getMessageDAO().addMessageSingle(ID, SenderID, null, messageSendFromClient,null,LocalDateTime.parse(timeSend));
+            Model.getInstance().getMessageDAO().addMessageSingle(ID, clientID, messageSendFromClient,"File",LocalDateTime.parse(timeSend));
         }
     }
 
     public void handleSingleImage(String[] messageParts) throws IOException{
-        String SenderID = messageParts[2];
-        String messageSendFromClient = messageParts[3];
+        String base64Image = messageParts[1];
+        String nameImage = messageParts[2];
+        String imagePath= messageParts[3];
         String ReceiverID = messageParts[4];
         String timeSend= messageParts[5];
-        Model.getInstance().getClientThreadManager().singleChat(ReceiverID, messageSendFromClient);
-        if(!Model.getInstance().getConversationDAO().checkConversationExists(SenderID, ReceiverID)){
-            Model.getInstance().getConversationDAO().addConversationSingle(SenderID, ReceiverID);
-            String ID=Model.getInstance().getConversationDAO().getConversationSingleID(SenderID, ReceiverID);
-            Model.getInstance().getMessageDAO().addMessageSingle(ID, SenderID, null, null,messageSendFromClient,LocalDateTime.parse(timeSend));
-            Model.getInstance().getClientThreadManager().singleChat(ReceiverID, messageSendFromClient);
+        byte[] imageBytes = Base64.getDecoder().decode(base64Image);
+        File localDir=new File(directoryImage);
+        if(!localDir.exists()){
+            localDir.mkdir();
+        }
+        File imageFile=new File(localDir,nameImage);
+        Files.write(imageFile.toPath(), imageBytes);
+        String messageSend="single-image|"+ReceiverID+"|"+base64Image+"|"+nameImage+"|"+timeSend+"|"+clientID;
+        System.out.println(Model.getInstance().getConversationDAO().checkConversationExist(clientID, ReceiverID));
+        if(!Model.getInstance().getConversationDAO().checkConversationExist(clientID, ReceiverID)){
+            Model.getInstance().getConversationDAO().addConversationSingle(clientID, ReceiverID);
+            String ID=Model.getInstance().getConversationDAO().getConversationSingleID(clientID, ReceiverID);
+            Model.getInstance().getMessageDAO().addMessageSingle(ID, clientID, imagePath, "Image",LocalDateTime.parse(timeSend));
+            Model.getInstance().getClientThreadManager().singleChat(ReceiverID, messageSend);
         }else{
-            String ID=Model.getInstance().getConversationDAO().getConversationSingleID(SenderID, ReceiverID);
-            Model.getInstance().getMessageDAO().addMessageSingle(ID, SenderID, null, null,messageSendFromClient,LocalDateTime.parse(timeSend));
+            String ID=Model.getInstance().getConversationDAO().getConversationSingleID(clientID, ReceiverID);
+            Model.getInstance().getMessageDAO().addMessageSingle(ID, clientID, imagePath, "Image",LocalDateTime.parse(timeSend));
+            Model.getInstance().getClientThreadManager().singleChat(ReceiverID, messageSend);
         }
     }
 
@@ -224,8 +244,13 @@ public class ClientThreadHandle implements Runnable{
 
     public void handleChatBotMessage(String[] messageParts) throws IOException{
         String response= ChatBotAPI.sendMessageToAPI(messageParts[1]);
-        String messageResponse= "response/"+response;
-        writeMessage(messageResponse);
+        String safeResponse = response.replace("\n", "<br>").replace("\r", " ").replace("*", " ");
+        LocalDateTime localDateTime = LocalDateTime.now();
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+        String time_created= localDateTime.format(dateTimeFormatter);
+        String messageResponse= "chatbot_response/"+safeResponse+"/"+time_created;
+        Model.getInstance().getClientThreadManager().chatbot(clientID, messageResponse);
+        System.out.println(messageResponse);
     }
 
     public void writeMessage(String message) {
@@ -234,72 +259,6 @@ public class ClientThreadHandle implements Runnable{
             outText.newLine();
             outText.flush();
         } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void receiveFile(){
-        try{
-            DataInputStream dis=new DataInputStream(inputStream);
-            String fileName=dis.readUTF();
-            long fileSize=dis.readLong();
-
-            Path filePath= Paths.get("image_storage/File", fileName);
-            Files.copy(dis,filePath, StandardCopyOption.REPLACE_EXISTING);
-        }catch (IOException e){
-            e.printStackTrace();
-        }
-    }
-
-    public void receiveImage(){
-        try{
-            DataInputStream dis=new DataInputStream(inputStream);
-            String fileName=dis.readUTF();
-            long fileSize=dis.readLong();
-
-            Path imagePath= Paths.get("image_storage/Image", fileName);
-            Files.copy(dis,imagePath, StandardCopyOption.REPLACE_EXISTING);
-        }catch (IOException e){
-            e.printStackTrace();
-        }
-    }
-
-    public void transferFile(String fileName){
-        File file=new File("image_storage/File", fileName);
-        try{
-            DataOutputStream dos=new DataOutputStream(outputStream);
-            dos.writeUTF(file.getName());
-            dos.writeLong(file.length());
-            FileInputStream fis=new FileInputStream(file);
-            byte[] buffer=new byte[4096];
-            int bytesRead;
-            while((bytesRead=fis.read(buffer))!=-1){
-                dos.write(buffer,0,bytesRead);
-            }
-            dos.flush();
-            dos.close();
-            fis.close();
-        }catch(IOException e){
-            e.printStackTrace();
-        }
-    }
-
-    public void transferImage(String imageName){
-        File image=new File("image_storage/Image", imageName);
-        try{
-            DataOutputStream dos=new DataOutputStream(outputStream);
-            dos.writeUTF(image.getName());
-            dos.writeLong(image.length());
-            FileInputStream fis=new FileInputStream(image);
-            byte[] buffer=new byte[4096];
-            int bytesRead;
-            while((bytesRead=fis.read(buffer))!=-1){
-                dos.write(buffer,0,bytesRead);
-            }
-            dos.flush();
-            dos.close();
-            fis.close();
-        }catch(IOException e){
             e.printStackTrace();
         }
     }

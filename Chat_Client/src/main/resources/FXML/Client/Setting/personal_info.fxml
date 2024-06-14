@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -13,25 +12,24 @@
          <Font name="Arial Bold" size="28.0" />
       </font>
    </Label>
-   <TextField layoutX="74.0" layoutY="320.0" prefHeight="38.0" prefWidth="279.0" promptText="Email" styleClass="field">
+   <TextField fx:id="Email" layoutX="73.0" layoutY="273.0" prefHeight="38.0" prefWidth="279.0" promptText="Email" styleClass="field">
       <font>
          <Font name="Arial" size="18.0" />
       </font>
    </TextField>
-   <Button layoutX="136.0" layoutY="415.0" mnemonicParsing="false" prefHeight="36.0" prefWidth="154.0" styleClass="btn-update" text="Update">
+   <Button fx:id="update_button" layoutX="135.0" layoutY="345.0" mnemonicParsing="false" prefHeight="36.0" prefWidth="154.0" styleClass="btn-update" text="Update">
       <font>
          <Font name="Arial" size="20.0" />
       </font>
    </Button>
-   <TextField editable="false" layoutX="73.0" layoutY="142.0" prefHeight="38.0" prefWidth="279.0" promptText="Your ID" styleClass="field">
+   <TextField fx:id="ID" editable="false" layoutX="73.0" layoutY="142.0" prefHeight="38.0" prefWidth="279.0" promptText="Your ID" styleClass="field">
       <font>
          <Font name="Arial" size="18.0" />
       </font>
    </TextField>
-   <TextField layoutX="73.0" layoutY="203.0" prefHeight="38.0" prefWidth="279.0" promptText="Name" styleClass="field">
+   <TextField fx:id="Name" layoutX="74.0" layoutY="210.0" prefHeight="38.0" prefWidth="279.0" promptText="Name" styleClass="field">
       <font>
          <Font name="Arial" size="18.0" />
       </font>
    </TextField>
-   <DatePicker layoutX="74.0" layoutY="261.0" prefHeight="38.0" prefWidth="279.0" promptText="Date of birth" styleClass="date-picker" />
 </AnchorPane>

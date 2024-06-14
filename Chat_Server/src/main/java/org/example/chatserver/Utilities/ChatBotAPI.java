@@ -19,11 +19,11 @@ public class ChatBotAPI {
         String apiKey = dotenv.get("API_Key");
         // Tạo yêu cầu API với tin nhắn được truyền vào
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("https://chat-gpt26.p.rapidapi.com/"))
+                .uri(URI.create("https://chatgpt-42.p.rapidapi.com/geminipro"))
                 .header("x-rapidapi-key", apiKey)
-                .header("x-rapidapi-host", "chat-gpt26.p.rapidapi.com")
+                .header("x-rapidapi-host", "chatgpt-42.p.rapidapi.com")
                 .header("Content-Type", "application/json")
-                .method("POST", HttpRequest.BodyPublishers.ofString("{\"model\":\"gpt-3.5-turbo\",\"messages\":[{\"role\":\"user\",\"content\":\"" + message + "\"}]}"))
+                .method("POST", HttpRequest.BodyPublishers.ofString("{\"messages\":[{\"role\":\"user\",\"content\":\""+message+"\"}],\"temperature\":0.9,\"top_k\":5,\"top_p\":0.9,\"max_tokens\":256,\"web_access\":false}"))
                 .build();
 
         // Gửi yêu cầu và nhận phản hồi từ API
@@ -34,7 +34,7 @@ public class ChatBotAPI {
             e.printStackTrace();
         }
 //         in ra chuỗi phản hồi json
-//        System.out.println(response.body());
+        System.out.println(response.body());
 //        phân tích chuỗi và lấy phần content
         return getMessageFromChatGPTResponse(response.body());
     }
@@ -42,17 +42,13 @@ public class ChatBotAPI {
     public static String getMessageFromChatGPTResponse(String response) {
         try {
             JsonObject jsonObject = JsonParser.parseString(response).getAsJsonObject();
-            JsonArray choices = jsonObject.getAsJsonArray("choices");
-            if (choices != null && !choices.isEmpty()) {
-                JsonObject message = choices.get(0).getAsJsonObject().getAsJsonObject("message");
-                if (message != null) {
-                    return message.get("content").getAsString();
-                }
+            if (jsonObject.has("result")) {
+                return jsonObject.get("result").getAsString();
             }
         } catch (JsonSyntaxException e) {
             e.printStackTrace();
         }
-        return "Lỗi";
+        return "Lỗi khi phân tích phản hồi JSON";
     }
 
 //    public static void main(String[] args) throws IOException, InterruptedException {

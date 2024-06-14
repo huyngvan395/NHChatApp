@@ -20,9 +20,18 @@ public class ChatPageController implements Initializable {
                     chat_page.setCenter(Model.getInstance().getViewFactory().getMenuChatBot());
                     chat_page.setRight(Model.getInstance().getViewFactory().getMessageChatBoxBot());
                 }
-                case Single -> chat_page.setCenter(Model.getInstance().getViewFactory().getMenuChatSingle());
-                case Group -> chat_page.setCenter(Model.getInstance().getViewFactory().getMenuChatGroup());
-                default -> chat_page.setRight(Model.getInstance().getViewFactory().getMessageChatBox());
+                case Single -> {
+                    chat_page.setCenter(Model.getInstance().getViewFactory().getMenuChatSingle());
+                    chat_page.setRight(Model.getInstance().getViewFactory().getMessageChatBox());
+                }
+                case Group -> {
+                    chat_page.setCenter(Model.getInstance().getViewFactory().getMenuChatGroup());
+                    chat_page.setRight(Model.getInstance().getViewFactory().getMessageChatBox());
+                }
+                default -> {
+                    chat_page.setCenter(Model.getInstance().getViewFactory().getMenuChatSingle());
+                    chat_page.setRight(Model.getInstance().getViewFactory().getMessageChatBox());
+                }
             }
         });
     }

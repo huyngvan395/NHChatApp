@@ -5,6 +5,7 @@ import org.example.chatserver.Controller.ClientThreadHandle;
 import org.example.chatserver.Controller.ClientThreadManager;
 import org.example.chatserver.DAO.AccountDAO;
 import org.example.chatserver.DAO.ConversationDAO;
+import org.example.chatserver.DAO.ListClientDAO;
 import org.example.chatserver.DAO.MessageDAO;
 
 import java.io.IOException;
@@ -16,12 +17,16 @@ public class Model {
     private AccountDAO accountDAO;
     private MessageDAO messageDAO;
     private ConversationDAO conversationDAO;
+    private ListClientDAO listClientDAO;
     private final ClientThreadManager clientThreadManager;
     private final List<Client> clientOnlineList;
 
     public Model(){
         this.accountDAO=new AccountDAO();
+        this.conversationDAO=new ConversationDAO();
+        this.messageDAO=new MessageDAO();
         this.clientThreadManager=new ClientThreadManager();
+        this.listClientDAO=new ListClientDAO();
         this.clientOnlineList=new ArrayList<>();
     }
 
@@ -58,6 +63,10 @@ public class Model {
 
     public ClientThreadManager getClientThreadManager() {
         return clientThreadManager;
+    }
+
+    public ListClientDAO getListClientDAO() {
+        return listClientDAO;
     }
 
 }

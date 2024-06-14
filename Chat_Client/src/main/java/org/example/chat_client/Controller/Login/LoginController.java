@@ -55,6 +55,11 @@ public class LoginController implements Initializable {
                 Model.getInstance().setCurrentClient(client);
                 Model.getInstance().getViewFactory().closeStage((Stage)signup.getScene().getWindow());
                 Model.getInstance().getViewFactory().showClientPage();
+                if(!Model.getInstance().isRunning()){
+                    Model.getInstance().setRunning(true);
+                }
+                Model.getInstance().startMessageReader();
+                Model.getInstance().processMessages();
             }
         }
     }
