@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+
+<AnchorPane prefHeight="650.0" prefWidth="600.0" stylesheets="@../../CSS/Client/initial_box.css"
+            xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1">
+   <Label layoutX="120.0" layoutY="211.0" text="Please choose friends to chat ">
+      <font>
+         <Font name="Arial Bold" size="25.0"/>
+      </font>
+   </Label>
+</AnchorPane>

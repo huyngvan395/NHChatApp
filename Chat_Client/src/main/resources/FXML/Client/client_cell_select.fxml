@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="60.0" prefWidth="320.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.chat_client.Controller.Client.ClientCellSelectController">
+   <RadioButton fx:id="select_radio" layoutX="3.0" layoutY="4.0" mnemonicParsing="false" prefHeight="50.0" prefWidth="22.0">
+      <font>
+         <Font size="14.0" />
+      </font>
+   </RadioButton>
+   <ImageView fx:id="image_avatar" fitHeight="50.0" fitWidth="50.0" layoutX="31.0" layoutY="5.0" pickOnBounds="true">
+      <clip>
+         <Circle centerX="25" centerY="25" radius="25" />
+      </clip>
+      <Image url="@../../Image/userchatdefault.png" />
+   </ImageView>
+   <Label fx:id="name_lbl" layoutX="98.0" layoutY="16.0" maxWidth="200.0" text="Name">
+      <font>
+         <Font name="System Bold" size="16.0" />
+      </font>
+   </Label>
+</AnchorPane>

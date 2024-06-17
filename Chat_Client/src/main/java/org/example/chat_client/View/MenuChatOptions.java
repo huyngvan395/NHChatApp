@@ -4,5 +4,6 @@ public enum MenuChatOptions {
     Bot,
     Single,
     Group,
-    CreateGroup
+    ReloadSingle,
+    ReloadGroup
 }

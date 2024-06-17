@@ -31,6 +31,7 @@ public class MenuOptionsController implements Initializable {
         chat_bot.setOnAction(event -> ChatBot());
         logout.setOnAction(event -> Logout());
         client_personal.setOnAction(event -> ClientPersonal());
+        create_group.setOnAction(e->CreateGroup());
     }
 
     public void ChatSingle(){
@@ -57,4 +58,7 @@ public class MenuOptionsController implements Initializable {
         Model.getInstance().getViewFactory().showClientSetting();
     }
 
+    public void CreateGroup(){
+        Model.getInstance().getViewFactory().showAddClientToGroup();
+    }
 }

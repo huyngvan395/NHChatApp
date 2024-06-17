@@ -44,6 +44,11 @@ public class ViewFactory {
         createStage(fxmlLoader);
     }
 
+    public void showAddClientToGroup(){
+        FXMLLoader fxmlLoader=new FXMLLoader(getClass().getResource("/FXML/Client/create_group_page.fxml"));
+        createStage(fxmlLoader);
+    }
+
     private void createStage(FXMLLoader fxmlLoader) {
         Scene scene=null;
         try{
@@ -130,7 +135,10 @@ public class ViewFactory {
     private AnchorPane MenuChatSingle;
     private AnchorPane MenuChatGroup;
     private BorderPane MessageChatBoxBot;
-    private BorderPane MessageChatBox;
+    private BorderPane MessageSingleChatBox;
+    private BorderPane MessageGroupChatBox;
+    private AnchorPane InitialSingleBox;
+    private AnchorPane InitialGroupBox;
     private final ObjectProperty<MenuChatOptions> MenuChatOptions;
 
     public AnchorPane getMenuChatBot() {
@@ -160,13 +168,40 @@ public class ViewFactory {
         return MenuChatGroup;
     }
 
-    public BorderPane getMessageChatBox() {
+    public AnchorPane getInitialSingleBox(){
         try{
-            MessageChatBox=new FXMLLoader(getClass().getResource("/FXML/Client/message_chat_single_box.fxml")).load();
+            InitialSingleBox=new FXMLLoader(getClass().getResource("/FXMl/Client/initial_chat_single_box.fxml")).load();
         }catch (IOException e){
             e.printStackTrace();
         }
-        return MessageChatBox;
+        return InitialSingleBox;
+    }
+
+    public AnchorPane getInitialGroupBox(){
+        try{
+            InitialGroupBox=new FXMLLoader(getClass().getResource("/FXMl/Client/initial_chat_group_box.fxml")).load();
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+        return InitialGroupBox;
+    }
+
+    public BorderPane getMessageSingleChatBox() {
+        try{
+            MessageSingleChatBox=new FXMLLoader(getClass().getResource("/FXML/Client/message_chat_single_box.fxml")).load();
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+        return MessageSingleChatBox;
+    }
+
+    public BorderPane getMessageGroupChatBox(){
+        try{
+            MessageGroupChatBox=new FXMLLoader(getClass().getResource("/FXML/Client/message_chat_group_box.fxml")).load();
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+        return MessageGroupChatBox;
     }
 
     public BorderPane getMessageChatBoxBot() {
@@ -248,14 +283,17 @@ public class ViewFactory {
         return MessageSingleReceive;
     }
 
-    public AnchorPane getMessageGroupReceive(String time_created, String message, String image_avatar){
+    public AnchorPane getMessageGroupReceive(String nameSend,String message,String time_created, String image_avatar){
         try{
             FXMLLoader fxmlLoader=new FXMLLoader(getClass().getResource("/FXML/Client/Message/message_group_receive.fxml"));
             MessageGroupReceive=fxmlLoader.load();
             MessageGroupReceiveController messageGroupReceiveController=fxmlLoader.getController();
             messageGroupReceiveController.setTimeCreated(time_created);
             messageGroupReceiveController.setMessage(message);
-            messageGroupReceiveController.setImage(image_avatar);
+            if(image_avatar!=null){
+                messageGroupReceiveController.setImage(image_avatar);
+            }
+            messageGroupReceiveController.setName(nameSend);
         }catch(IOException e){
             e.printStackTrace();
         }
@@ -293,7 +331,7 @@ public class ViewFactory {
         return ImageSingleReceive;
     }
 
-    public AnchorPane getImageGroupReceive(String time_created, String image, String image_avatar) {
+    public AnchorPane getImageGroupReceive(String nameSend, String image, String time_created, String image_avatar) {
         try{
             FXMLLoader fxmlLoader=new FXMLLoader(getClass().getResource("/FXML/Client/Image/image_group_receive.fxml"));
             ImageGroupReceive=fxmlLoader.load();
@@ -301,6 +339,7 @@ public class ViewFactory {
             imageGroupReceiveController.setTimeCreated(time_created);
             imageGroupReceiveController.setImageAvatar(image_avatar);
             imageGroupReceiveController.setImageContain(image);
+            imageGroupReceiveController.setName(nameSend);
         }catch (IOException e){
             e.printStackTrace();
         }
@@ -325,7 +364,7 @@ public class ViewFactory {
         return FileSend;
     }
 
-    public AnchorPane getFileSingleReceive(String time_created, String filename) {
+    public AnchorPane getFileSingleReceive( String filename,String time_created) {
         try{
             FXMLLoader fxmlLoader=new FXMLLoader(getClass().getResource("/FXML/Client/File/file_single_receive.fxml"));
             FileSingleReceive=fxmlLoader.load();
@@ -338,7 +377,7 @@ public class ViewFactory {
         return FileSingleReceive;
     }
 
-    public AnchorPane getFileGroupReceive(String time_created, String filename, String image_avatar) {
+    public AnchorPane getFileGroupReceive(String nameSend,String filename, String time_created, String image_avatar) {
         try{
             FXMLLoader fxmlLoader=new FXMLLoader(getClass().getResource("/FXML/Client/File/file_group_receive.fxml"));
             FileGroupReceive=fxmlLoader.load();
@@ -346,9 +385,12 @@ public class ViewFactory {
             fileGroupReceiveController.setTimeCreated(time_created);
             fileGroupReceiveController.setFileName(filename);
             fileGroupReceiveController.setImage_avatar(image_avatar);
+            fileGroupReceiveController.setName(nameSend);
         }catch (IOException e){
             e.printStackTrace();
         }
         return FileGroupReceive;
     }
+
+
 }

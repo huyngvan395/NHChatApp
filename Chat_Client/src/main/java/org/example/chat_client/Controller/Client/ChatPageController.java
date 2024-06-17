@@ -20,17 +20,23 @@ public class ChatPageController implements Initializable {
                     chat_page.setCenter(Model.getInstance().getViewFactory().getMenuChatBot());
                     chat_page.setRight(Model.getInstance().getViewFactory().getMessageChatBoxBot());
                 }
-                case Single -> {
-                    chat_page.setCenter(Model.getInstance().getViewFactory().getMenuChatSingle());
-                    chat_page.setRight(Model.getInstance().getViewFactory().getMessageChatBox());
+                case ReloadSingle,Single -> {
+                    if(Model.getInstance().targetClientObjectProperty().get()!=null){
+                        chat_page.setCenter(Model.getInstance().getViewFactory().getMenuChatSingle());
+                        chat_page.setRight(Model.getInstance().getViewFactory().getMessageSingleChatBox());
+                    }else{
+                        chat_page.setCenter(Model.getInstance().getViewFactory().getMenuChatSingle());
+                        chat_page.setRight(Model.getInstance().getViewFactory().getInitialSingleBox());
+                    }
                 }
-                case Group -> {
-                    chat_page.setCenter(Model.getInstance().getViewFactory().getMenuChatGroup());
-                    chat_page.setRight(Model.getInstance().getViewFactory().getMessageChatBox());
-                }
-                default -> {
-                    chat_page.setCenter(Model.getInstance().getViewFactory().getMenuChatSingle());
-                    chat_page.setRight(Model.getInstance().getViewFactory().getMessageChatBox());
+                case ReloadGroup,Group -> {
+                    if(Model.getInstance().targetGroupObjectProperty().get()!=null){
+                        chat_page.setCenter(Model.getInstance().getViewFactory().getMenuChatGroup());
+                        chat_page.setRight(Model.getInstance().getViewFactory().getMessageGroupChatBox());
+                    }else{
+                        chat_page.setCenter(Model.getInstance().getViewFactory().getMenuChatGroup());
+                        chat_page.setRight(Model.getInstance().getViewFactory().getInitialGroupBox());
+                    }
                 }
             }
         });

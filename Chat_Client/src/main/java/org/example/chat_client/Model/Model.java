@@ -1,6 +1,5 @@
 package org.example.chat_client.Model;
 
-import com.google.gson.Gson;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
@@ -10,7 +9,6 @@ import org.example.chat_client.View.ViewFactory;
 import java.io.IOException;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
 
 
 public class Model {
@@ -19,22 +17,26 @@ public class Model {
     private final SocketClient socketClient;
     private ObservableList<Client> clientOnlineList;
     private ObservableList<Client> listClient;
+    private ObservableList<Group> groupList;
     private Client currentClient;
     private volatile boolean running;
     private ObjectProperty<Client> targetClient=new SimpleObjectProperty<>();
     private final BlockingQueue<String> messageResponseQueue;
     private final MessageHandler messageHandler;
+    private ObjectProperty<Group> targetGroup=new SimpleObjectProperty<>();
 
     private Model() throws IOException {
         this.viewFactory = new ViewFactory();
         this.socketClient= new SocketClient();
         this.clientOnlineList= FXCollections.observableArrayList();
         this.listClient=FXCollections.observableArrayList();
+        this.groupList=FXCollections.observableArrayList();
         running = true;
         this.messageHandler = new MessageHandler();
         this.messageResponseQueue = new LinkedBlockingQueue<>(1);
         this.messageHandler.addMessageListener(new ClientOnlineListUpdateListener(clientOnlineList));
         this.messageHandler.addMessageListener(new ClientListUpdateListener(listClient));
+        this.messageHandler.addMessageListener(new GroupListUpdateListener(groupList));
     }
 
     public static synchronized Model getInstance() {
@@ -62,6 +64,10 @@ public class Model {
 
     public ObservableList<Client> getListClient(){
         return listClient;
+    }
+
+    public ObservableList<Group> getGroupList() {
+        return groupList;
     }
 
     public void startMessageReader() {
@@ -114,6 +120,10 @@ public class Model {
         return targetClient;
     }
 
+    public ObjectProperty<Group> targetGroupObjectProperty(){
+        return targetGroup;
+    }
+
     public void setRunning(boolean running) {
         this.running = running;
     }
@@ -126,6 +136,9 @@ public class Model {
         this.currentClient=null;
         this.listClient.clear();
         this.clientOnlineList.clear();
+        this.targetClient=null;
+        this.targetGroup=null;
+        this.groupList.clear();
     }
 
     public BlockingQueue<String> getMessageResponseQueue() {

@@ -1,0 +1,14 @@
+.create_btn{
+    -fx-background-color: #8E5DF1;
+    -fx-text-fill: white;
+}
+.create_btn FontIcon{
+    -fx-fill: white;
+}
+.create_btn:hover{
+    -fx-opacity: 0.7;
+    -fx-cursor: hand;
+}
+ImageView:hover{
+    -fx-cursor: hand;
+}

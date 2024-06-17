@@ -2,6 +2,7 @@ package org.example.chatserver.Controller;
 
 import com.google.gson.Gson;
 import org.example.chatserver.Model.Client;
+import org.example.chatserver.Model.Group;
 import org.example.chatserver.Model.Model;
 import org.example.chatserver.Utilities.SendMail;
 
@@ -83,14 +84,32 @@ public class ClientThreadManager {
         clientThreadHandle.writeMessage("listClient/"+listClientJson);
     }
 
-    public void receiveFile(){}
+    public void sendListGroup(ClientThreadHandle clientThreadHandle){
+        List<Group> listGroup=Model.getInstance().getConversationDAO().getListGroup(clientThreadHandle.getClientID());
+        String listGroupJson=gson.toJson(listGroup);
+        clientThreadHandle.writeMessage("listGroup|"+listGroupJson);
+    }
 
-//    public synchronized void stopAllClients() {
-//        for (ClientThreadHandle clientHandler : clientHandlers) {
-//            clientHandler.stopClient();
-//        }
-//        clientHandlers.clear();
-//    }
+    public void sendNewGroup(String nameGroup,String message){
+        String IDGroup=Model.getInstance().getConversationDAO().getIDGroup(nameGroup);
+        List<String> listIDMember=Model.getInstance().getConversationDAO().getIDMembers(IDGroup);
+        for(String IDMember:listIDMember){
+            for(ClientThreadHandle clientHandler : clientHandlers){
+                if(clientHandler.getClientID().equals(IDMember)){
+                    clientHandler.writeMessage("newGroup|"+message);
+                }
+            }
+        }
+    }
 
-
+    public void groupChat(String groupID,String senderID, String message){
+        List<String> listIDMember=Model.getInstance().getConversationDAO().getIDMembers(groupID);
+        for(String IDMember:listIDMember){
+            for(ClientThreadHandle clientHandler : clientHandlers){
+                if(clientHandler.getClientID().equals(IDMember) && !clientHandler.getClientID().equals(senderID)){
+                    clientHandler.writeMessage(message);
+                }
+            }
+        }
+    }
 }

@@ -1,7 +1,9 @@
 package org.example.chatserver.Controller;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import org.example.chatserver.Model.Client;
+import org.example.chatserver.Model.Group;
 import org.example.chatserver.Model.Model;
 import org.example.chatserver.Server;
 import org.example.chatserver.Utilities.ChatBotAPI;
@@ -17,20 +19,25 @@ import java.nio.file.StandardCopyOption;
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Base64;
+import java.util.List;
 
 public class ClientThreadHandle implements Runnable{
     private final Socket clientSocket;
     private BufferedReader inText;
     private BufferedWriter outText;
-//    private BufferedInputStream inputStream;
-//    private BufferedOutputStream outputStream;
     private boolean running;
     private String clientID;
     private final String directoryImage="server_storage/Image";
+    private final String directoryFile="server_storage/File";
+    private final String directoryImageAvatar="server_storage/Image_Avatar";
+    private final String directoryImageGroup="server_storage/Image_Group";
+    private final Gson gson = new Gson();
 
     public ClientThreadHandle(Socket clientSocket) throws IOException {
         this.clientSocket = clientSocket;
@@ -62,7 +69,7 @@ public class ClientThreadHandle implements Runnable{
                     handleLogin(messageParts);
                 }
                 else if(message.startsWith("signup")){
-                    handleSignup(messageParts);
+                    handleSignup(messageParts1);
                 }
                 else if(message.startsWith("single-message")){
                     handleSingleMessage(messageParts);
@@ -86,6 +93,18 @@ public class ClientThreadHandle implements Runnable{
                     Model.getInstance().getClientThreadManager().sendRemoveClient("removeClientOnline/"+clientID);
                     Model.getInstance().removeClientOnlineList(clientID);
                     this.clientID="";
+                }
+                else if(message.startsWith("create_group")){
+                    handleCreateGroup(messageParts1);
+                }
+                else if(message.startsWith("group-message")){
+                    handleGroupMessage(messageParts);
+                }
+                else if(message.startsWith("group-file")){
+                    handleGroupFile(messageParts1);
+                }
+                else if(message.startsWith("group-image")){
+                    handleGroupImage(messageParts1);
                 }
                 else if(message.startsWith("remove")){
                     running=false;
@@ -148,6 +167,7 @@ public class ClientThreadHandle implements Runnable{
             Model.getInstance().getClientThreadManager().sendListOnlineClient(this);
             Model.getInstance().addClientOnlineList(client);
             Model.getInstance().getClientThreadManager().sendListClient(this);
+            Model.getInstance().getClientThreadManager().sendListGroup(this);
             System.out.println("Client logged in and info sent to others");
         } else {
             String messageToClient = "login-failed";
@@ -161,8 +181,19 @@ public class ClientThreadHandle implements Runnable{
         String email= messageParts[3];
         String password= messageParts[4];
         String encodePass= Security.enCode(password);
-//                    String image= messageParts[6];
-        Model.getInstance().getAccountDAO().addClient(ID, name, email, encodePass);
+        String image= messageParts[7];
+        File localDir=new File(directoryImageAvatar);
+        if(!localDir.exists()){
+            localDir.mkdir();
+        }
+        byte[] imageBytes=Base64.getDecoder().decode(messageParts[5]);
+        File imageAvatarClient=new File(directoryImageAvatar, messageParts[6]);
+        try{
+            Files.write(imageAvatarClient.toPath(), imageBytes);
+        }catch(IOException e){
+            e.printStackTrace();
+        }
+        Model.getInstance().getAccountDAO().addClient(ID, name, email, encodePass, image);
         this.writeMessage("signup/" + ID + "/success");
     }
 
@@ -173,31 +204,34 @@ public class ClientThreadHandle implements Runnable{
         String messageSend="single-message/"+ReceiverID+"/"+messageSendFromClient+"/"+timeSend+"/"+clientID;
         if(!Model.getInstance().getConversationDAO().checkConversationExist(clientID, ReceiverID)){
             Model.getInstance().getConversationDAO().addConversationSingle(clientID, ReceiverID);
-            String ID=Model.getInstance().getConversationDAO().getConversationSingleID(clientID, ReceiverID);
-            Model.getInstance().getMessageDAO().addMessageSingle(ID, clientID, messageSendFromClient, "Text",LocalDateTime.parse(timeSend));
-            Model.getInstance().getClientThreadManager().singleChat(ReceiverID, messageSend);
-        }else{
-            String ID=Model.getInstance().getConversationDAO().getConversationSingleID(clientID, ReceiverID);
-            Model.getInstance().getMessageDAO().addMessageSingle(ID, clientID, messageSendFromClient, "Text",LocalDateTime.parse(timeSend));
-            Model.getInstance().getClientThreadManager().singleChat(ReceiverID, messageSend);
         }
+        String ID=Model.getInstance().getConversationDAO().getConversationSingleID(clientID, ReceiverID);
+        Model.getInstance().getMessageDAO().addMessageSingle(ID, clientID, messageSendFromClient, "Text",LocalDateTime.parse(timeSend));
+        Model.getInstance().getClientThreadManager().singleChat(ReceiverID, messageSend);
+
     }
 
     public void handleSingleFile(String[] messageParts) throws IOException{
-        String SenderID = messageParts[2];
-        String messageSendFromClient = messageParts[3];
+        String base64File = messageParts[1];
+        String nameFile = messageParts[2];
+        String filePath= messageParts[3];
         String ReceiverID = messageParts[4];
         String timeSend= messageParts[5];
-        Model.getInstance().getClientThreadManager().singleChat(ReceiverID, messageSendFromClient);
-        if(!Model.getInstance().getConversationDAO().checkConversationExist(SenderID, ReceiverID)){
-            Model.getInstance().getConversationDAO().addConversationSingle(SenderID, ReceiverID);
-            String ID=Model.getInstance().getConversationDAO().getConversationSingleID(SenderID, ReceiverID);
-            Model.getInstance().getMessageDAO().addMessageSingle(ID, clientID, messageSendFromClient,"File",LocalDateTime.parse(timeSend));
-            Model.getInstance().getClientThreadManager().singleChat(ReceiverID, messageSendFromClient);
-        }else{
-            String ID=Model.getInstance().getConversationDAO().getConversationSingleID(SenderID, ReceiverID);
-            Model.getInstance().getMessageDAO().addMessageSingle(ID, clientID, messageSendFromClient,"File",LocalDateTime.parse(timeSend));
+        byte[] fileBytes = Base64.getDecoder().decode(base64File);
+        File localDir=new File(directoryFile);
+        if(!localDir.exists()){
+            localDir.mkdir();
         }
+        File file=new File(localDir,nameFile);
+        Files.write(file.toPath(), fileBytes);
+        String messageSend="single-file|"+ReceiverID+"|"+base64File+"|"+nameFile+"|"+timeSend+"|"+clientID;
+        System.out.println(Model.getInstance().getConversationDAO().checkConversationExist(clientID, ReceiverID));
+        if(!Model.getInstance().getConversationDAO().checkConversationExist(clientID, ReceiverID)){
+            Model.getInstance().getConversationDAO().addConversationSingle(clientID, ReceiverID);
+        }
+        String ID=Model.getInstance().getConversationDAO().getConversationSingleID(clientID, ReceiverID);
+        Model.getInstance().getMessageDAO().addMessageSingle(ID, clientID, filePath,"File",LocalDateTime.parse(timeSend));
+        Model.getInstance().getClientThreadManager().singleChat(ReceiverID, messageSend);
     }
 
     public void handleSingleImage(String[] messageParts) throws IOException{
@@ -217,14 +251,10 @@ public class ClientThreadHandle implements Runnable{
         System.out.println(Model.getInstance().getConversationDAO().checkConversationExist(clientID, ReceiverID));
         if(!Model.getInstance().getConversationDAO().checkConversationExist(clientID, ReceiverID)){
             Model.getInstance().getConversationDAO().addConversationSingle(clientID, ReceiverID);
-            String ID=Model.getInstance().getConversationDAO().getConversationSingleID(clientID, ReceiverID);
-            Model.getInstance().getMessageDAO().addMessageSingle(ID, clientID, imagePath, "Image",LocalDateTime.parse(timeSend));
-            Model.getInstance().getClientThreadManager().singleChat(ReceiverID, messageSend);
-        }else{
-            String ID=Model.getInstance().getConversationDAO().getConversationSingleID(clientID, ReceiverID);
-            Model.getInstance().getMessageDAO().addMessageSingle(ID, clientID, imagePath, "Image",LocalDateTime.parse(timeSend));
-            Model.getInstance().getClientThreadManager().singleChat(ReceiverID, messageSend);
         }
+        String ID=Model.getInstance().getConversationDAO().getConversationSingleID(clientID, ReceiverID);
+        Model.getInstance().getMessageDAO().addMessageSingle(ID, clientID, imagePath, "Image",LocalDateTime.parse(timeSend));
+        Model.getInstance().getClientThreadManager().singleChat(ReceiverID, messageSend);
     }
 
     public void handleChangePass(String[] messageParts){
@@ -246,11 +276,80 @@ public class ClientThreadHandle implements Runnable{
         String response= ChatBotAPI.sendMessageToAPI(messageParts[1]);
         String safeResponse = response.replace("\n", "<br>").replace("\r", " ").replace("*", " ");
         LocalDateTime localDateTime = LocalDateTime.now();
-        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm");
-        String time_created= localDateTime.format(dateTimeFormatter);
-        String messageResponse= "chatbot_response/"+safeResponse+"/"+time_created;
+        String timeShow=formatDateTime(localDateTime);
+        String messageResponse= "chatbot_response/"+safeResponse+"/"+timeShow;
         Model.getInstance().getClientThreadManager().chatbot(clientID, messageResponse);
         System.out.println(messageResponse);
+    }
+
+    public void handleCreateGroup(String[] messageParts) throws IOException{
+        String nameGroup= messageParts[1];
+        String imagePath= messageParts[2];
+        String base64Image= messageParts[3];
+        String listClientInGroup= messageParts[4];
+        String nameImage=messageParts[5];
+        Model.getInstance().getConversationDAO().createConversationGroup(nameGroup, imagePath);
+        String IDGroup=Model.getInstance().getConversationDAO().getIDGroup(nameGroup);
+        List<Client> listClient=gson.fromJson(listClientInGroup, new TypeToken<List<Client>>(){}.getType());;
+        for(Client c:listClient){
+            Model.getInstance().getConversationDAO().addMemberGroup(IDGroup, c.getClientID());
+        }
+        Group group=new Group(IDGroup, nameGroup, imagePath);
+        String groupJSon=gson.toJson(group);
+        String message=groupJSon+"|"+nameImage+"|"+base64Image;
+        Model.getInstance().getClientThreadManager().sendNewGroup(nameGroup, message);
+        byte[] imageBytes = Base64.getDecoder().decode(base64Image);
+        File localDir=new File(directoryImageGroup);
+        if(!localDir.exists()){
+            localDir.mkdir();
+        }
+        File imageFile=new File(localDir,nameImage);
+        Files.write(imageFile.toPath(), imageBytes);
+    }
+
+    public void handleGroupMessage(String[] messageParts) throws IOException{
+        String messageSendFromClient= messageParts[1];
+        String groupID= messageParts[2];
+        String timeSend=messageParts[3];
+        String messageSend="group-message/"+groupID+"/"+messageSendFromClient+"/"+timeSend+"/"+clientID;
+        Model.getInstance().getMessageDAO().addMessageGroup(groupID, clientID, messageSendFromClient, "Text", LocalDateTime.parse(timeSend));
+        Model.getInstance().getClientThreadManager().groupChat(groupID, clientID, messageSend);
+    }
+
+    public void handleGroupImage(String[] messageParts) throws IOException{
+        String base64Image = messageParts[1];
+        String nameImage = messageParts[2];
+        String imagePath= messageParts[3];
+        String groupID = messageParts[4];
+        String timeSend= messageParts[5];
+        byte[] imageBytes = Base64.getDecoder().decode(base64Image);
+        File localDir=new File(directoryImage);
+        if(!localDir.exists()){
+            localDir.mkdir();
+        }
+        File imageFile=new File(localDir,nameImage);
+        Files.write(imageFile.toPath(), imageBytes);
+        String messageSend="single-image|"+groupID+"|"+base64Image+"|"+nameImage+"|"+timeSend+"|"+clientID;
+        Model.getInstance().getMessageDAO().addMessageGroup(groupID,clientID,imagePath,"Image",LocalDateTime.parse(timeSend));
+        Model.getInstance().getClientThreadManager().groupChat(groupID,clientID,messageSend);
+    }
+
+    public void handleGroupFile(String[] messageParts) throws IOException{
+        String base64File = messageParts[1];
+        String nameFile = messageParts[2];
+        String filePath= messageParts[3];
+        String groupID = messageParts[4];
+        String timeSend= messageParts[5];
+        byte[] fileBytes = Base64.getDecoder().decode(base64File);
+        File localDir=new File(directoryFile);
+        if(!localDir.exists()){
+            localDir.mkdir();
+        }
+        File file=new File(localDir,nameFile);
+        Files.write(file.toPath(), fileBytes);
+        String messageSend="group-file|"+groupID+"|"+base64File+"|"+nameFile+"|"+timeSend+"|"+clientID;
+        Model.getInstance().getMessageDAO().addMessageGroup(groupID,clientID,filePath,"File",LocalDateTime.parse(timeSend));
+        Model.getInstance().getClientThreadManager().groupChat(groupID,clientID,messageSend);
     }
 
     public void writeMessage(String message) {
@@ -276,5 +375,24 @@ public class ClientThreadHandle implements Runnable{
 
     public String getClientID() {
         return clientID;
+    }
+
+    public static String formatDateTime(LocalDateTime targetDateTime) {
+
+        LocalDateTime now = LocalDateTime.now();
+
+        Duration duration = Duration.between(targetDateTime, now);
+        String formattedDateTime;
+        if (duration.toDays() == 0) {
+            formattedDateTime = targetDateTime.format(DateTimeFormatter.ofPattern("HH:mm"));
+        } else if (duration.toDays() == 1) {
+            formattedDateTime = "yesterday " + targetDateTime.format(DateTimeFormatter.ofPattern("HH:mm"));
+        } else if (duration.toDays() > 1 && duration.toDays() <= 7) {
+            formattedDateTime = targetDateTime.format(DateTimeFormatter.ofPattern("E HH:mm"));
+        } else {
+            formattedDateTime = targetDateTime.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
+        }
+
+        return formattedDateTime;
     }
 }

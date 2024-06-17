@@ -58,14 +58,15 @@ public class AccountDAO {
         return email;
     }
 
-    public void addClient(String clientID, String clientName, String email, String password) {
+    public void addClient(String clientID, String clientName, String email, String password, String image) {
         PreparedStatement ps;
         try{
-            ps=con.prepareStatement("insert into client(ClientID, Name, Email, Password) values(?,?,?,?,?)");
+            ps=con.prepareStatement("insert into client(ClientID, Name, Email, Password) values(?,?,?,?,?,?)");
             ps.setString(1,clientID);
             ps.setString(2,clientName);
             ps.setString(4,email);
             ps.setString(5,password);
+            ps.setString(6,image);
             ps.executeUpdate();
         }catch (SQLException e){
             e.printStackTrace();

@@ -4,6 +4,7 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
@@ -16,6 +17,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ResourceBundle;
 
 public class MessageChatBoxBotController implements Initializable, MessageListener {
+    public ScrollPane scrollPane;
     @FXML
     private TextArea Enter_message;
     @FXML

@@ -10,9 +10,9 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import org.example.chat_client.Model.Client;
 import org.example.chat_client.Model.Model;
-import org.example.chat_client.View.ChatOption;
-import org.example.chat_client.View.ClientConversationCellFactory;
+import org.example.chat_client.View.ClientSingleConversationCellFactory;
 import org.example.chat_client.View.ClientOnlineCellFactory;
+import org.example.chat_client.View.MenuChatOptions;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -56,19 +56,20 @@ public class MenuChatSingleController implements Initializable {
     public void setItemListView_Client(){
         ObservableList<Client> list = Model.getInstance().getListClient();
         listView_ClientCell.setItems(list);
-        listView_ClientCell.setCellFactory(listView->new ClientConversationCellFactory());
+        listView_ClientCell.setCellFactory(listView->new ClientSingleConversationCellFactory());
     }
 
     public void listenerEventClickClientCell(){
         listView_ClientCell.getSelectionModel().selectedItemProperty().addListener(((observable, oldValue, newValue) ->{
             Platform.runLater(()->{
-                getInfoTargetClient(newValue);
+                setInfoTargetClient(newValue);
                 System.out.println(Model.getInstance().targetClientObjectProperty().get().getName());
+                Model.getInstance().getViewFactory().getMenuChatOptions().set(MenuChatOptions.ReloadSingle);
             });
         }));
     }
 
-    private void getInfoTargetClient(Client client) {
+    private void setInfoTargetClient(Client client) {
         Model.getInstance().targetClientObjectProperty().set(client);
     }
 
