@@ -26,4 +26,6 @@ module org.example.chat_client {
     exports org.example.chat_client.Controller.Login;
     exports org.example.chat_client.Controller.Client.Setting;
     exports org.example.chat_client.Controller.Client.Menu;
+    exports org.example.chat_client.Controller.Client.ChatBox;
+    opens org.example.chat_client.Controller.Client.ChatBox;
 }

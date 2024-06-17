@@ -1,4 +1,4 @@
-package org.example.chatserver.Model;
+package org.example.chat_client.Model;
 
 import java.time.LocalDateTime;
 
@@ -38,6 +38,7 @@ public class Message {
     public void setMessageType(String messageType) {
         this.messageType = messageType;
     }
+
 
     public String getTimeSend() {
         return timeSend;

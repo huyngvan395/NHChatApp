@@ -1,4 +1,4 @@
-package org.example.chat_client.Controller.Client.Message;
+package org.example.chat_client.Controller.Client.ChatBox;
 
 import javafx.application.Platform;
 import javafx.fxml.FXML;

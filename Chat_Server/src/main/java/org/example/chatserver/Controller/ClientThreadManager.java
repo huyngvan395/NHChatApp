@@ -36,6 +36,17 @@ public class ClientThreadManager {
         }
     }
 
+    public void groupChat(String groupID,String senderID, String message){
+        List<String> listIDMember=Model.getInstance().getConversationDAO().getIDMembers(groupID);
+        for(String IDMember:listIDMember){
+            for(ClientThreadHandle clientHandler : clientHandlers){
+                if(clientHandler.getClientID().equals(IDMember) && !clientHandler.getClientID().equals(senderID)){
+                    clientHandler.writeMessage(message);
+                }
+            }
+        }
+    }
+
     public void chatbot(String receiveID, String message) {
         for (ClientThreadHandle clientHandler : clientHandlers) {
             if(clientHandler.getClientID().equals(receiveID)){
@@ -102,12 +113,20 @@ public class ClientThreadManager {
         }
     }
 
-    public void groupChat(String groupID,String senderID, String message){
-        List<String> listIDMember=Model.getInstance().getConversationDAO().getIDMembers(groupID);
+    public void sendHistoryMessageSingle(String ClientID1, String ClientID2, String message){
+        for(ClientThreadHandle clientThreadHandle:clientHandlers){
+            if(clientThreadHandle.getClientID().equals(ClientID1) || clientThreadHandle.getClientID().equals(ClientID2)){
+                clientThreadHandle.writeMessage("loadHistorySingle|"+message);
+            }
+        }
+    }
+
+    public void sendHistoryMessageGroup(String IDGroup, String message){
+        List<String> listIDMember=Model.getInstance().getConversationDAO().getIDMembers(IDGroup);
         for(String IDMember:listIDMember){
             for(ClientThreadHandle clientHandler : clientHandlers){
-                if(clientHandler.getClientID().equals(IDMember) && !clientHandler.getClientID().equals(senderID)){
-                    clientHandler.writeMessage(message);
+                if(IDMember.equals(clientHandler.getClientID())){
+                    clientHandler.writeMessage("loadHistoryGroup|"+message+"|"+IDGroup);
                 }
             }
         }

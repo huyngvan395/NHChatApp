@@ -1,4 +1,4 @@
-package org.example.chat_client.Controller.Client.Message;
+package org.example.chat_client.Controller.Client.ChatBox;
 
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -13,6 +13,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import org.example.chat_client.Model.DateTimeFormatMessage;
+import org.example.chat_client.Model.Message;
 import org.example.chat_client.Model.MessageListener;
 import org.example.chat_client.Model.Model;
 
@@ -23,6 +24,7 @@ import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.util.Base64;
+import java.util.List;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
@@ -52,11 +54,13 @@ public class MessageChatSingleBoxController implements Initializable, MessageLis
     public void initialize(URL location, ResourceBundle resources){
         if(Model.getInstance().targetClientObjectProperty().get()!=null){
             setGUIChat();
+            loadHistoryMessage();
         }
         scrollToBottom();
         Model.getInstance().targetClientObjectProperty().addListener(((observable, oldValue, newValue) ->{
             if(newValue!=null){
                 setGUIChat();
+                loadHistoryMessage();
             }
         }));
         sendMessage_btn.setOnAction(e->sendMessage());
@@ -234,6 +238,47 @@ public class MessageChatSingleBoxController implements Initializable, MessageLis
                         content_chat.requestLayout();
                         Platform.runLater(()->scrollToBottom());
                     }
+                }else if(message.startsWith("loadHistorySingle")){
+                    content_chat.getChildren().clear();
+                    if(Model.getInstance().getMessageListSingle()!=null){
+                        List<Message> listMessage=Model.getInstance().getMessageListSingle();
+                        for(Message messageOb: listMessage){
+                            Platform.runLater(()->{
+                                if(messageOb.getMessageType().equals("Text") && messageOb.getSenderID().equals(currentClientID)){
+                                    String timeShow=DateTimeFormatMessage.formatDateTime(LocalDateTime.parse(messageOb.getTimeSend()));
+                                    AnchorPane textPane=Model.getInstance().getViewFactory().getMessageSend(messageOb.getMessage().replace("<newline>","\n"), timeShow);
+                                    content_chat.getChildren().add(textPane);
+                                }else if(messageOb.getMessageType().equals("Text") && messageOb.getSenderID().equals(targetClientID)){
+                                    String timeShow=DateTimeFormatMessage.formatDateTime(LocalDateTime.parse(messageOb.getTimeSend()));
+                                    AnchorPane textPane=Model.getInstance().getViewFactory().getMessageSingleReceive(messageOb.getMessage().replace("<newline>","\n"), timeShow);
+                                    content_chat.getChildren().add(textPane);
+                                    System.out.println("Target");
+                                }else if(messageOb.getMessageType().equals("Image") && messageOb.getSenderID().equals(currentClientID)) {
+                                    String timeShow=DateTimeFormatMessage.formatDateTime(LocalDateTime.parse(messageOb.getTimeSend()));
+                                    AnchorPane imagePane=Model.getInstance().getViewFactory().getImageSend(timeShow, messageOb.getMessage());
+                                    content_chat.getChildren().add(imagePane);
+                                }else if(messageOb.getMessageType().equals("Image") && messageOb.getSenderID().equals(targetClientID)){
+                                    String timeShow=DateTimeFormatMessage.formatDateTime(LocalDateTime.parse(messageOb.getTimeSend()));
+                                    AnchorPane imagePane=Model.getInstance().getViewFactory().getImageSingleReceive(messageOb.getMessage(), timeShow);
+                                    content_chat.getChildren().add(imagePane);
+                                }else if(messageOb.getMessageType().equals("File") && messageOb.getSenderID().equals(currentClientID)){
+                                    String timeShow=DateTimeFormatMessage.formatDateTime(LocalDateTime.parse(messageOb.getTimeSend()));
+                                    int lastSlashIndex=messageOb.getMessage().lastIndexOf("/");
+                                    String fileName=messageOb.getMessage().substring(lastSlashIndex+1);
+                                    AnchorPane filePane=Model.getInstance().getViewFactory().getFileSend(timeShow,fileName);
+                                    content_chat.getChildren().add(filePane);
+                                }else if(messageOb.getMessageType().equals("File") && messageOb.getSenderID().equals(targetClientID)){
+                                    String timeShow=DateTimeFormatMessage.formatDateTime(LocalDateTime.parse(messageOb.getTimeSend()));
+                                    int lastSlashIndex=messageOb.getMessage().lastIndexOf("/");
+                                    String fileName=messageOb.getMessage().substring(lastSlashIndex+1);
+                                    AnchorPane filePane=Model.getInstance().getViewFactory().getFileSingleReceive(fileName ,timeShow);
+                                    content_chat.getChildren().add(filePane);
+                                }
+                                content_chat.requestLayout();
+                                Platform.runLater(()->scrollToBottom());
+                            });
+                        }
+                    }
                 }
             });
         }
@@ -241,5 +286,13 @@ public class MessageChatSingleBoxController implements Initializable, MessageLis
 
     private void scrollToBottom(){
         scrollPane.setVvalue(1.0);
+    }
+
+    public void loadHistoryMessage(){
+        if(Model.getInstance().targetClientObjectProperty().get()!=null){
+            String currentClientID=Model.getInstance().getCurrentClient().getClientID();
+            String targetClientID=Model.getInstance().targetClientObjectProperty().get().getClientID();
+            Model.getInstance().getSocketClient().sendMessage("load_history_single/"+currentClientID+"/"+targetClientID);
+        }
     }
 }

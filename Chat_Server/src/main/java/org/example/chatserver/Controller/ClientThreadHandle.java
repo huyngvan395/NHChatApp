@@ -4,8 +4,8 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import org.example.chatserver.Model.Client;
 import org.example.chatserver.Model.Group;
+import org.example.chatserver.Model.Message;
 import org.example.chatserver.Model.Model;
-import org.example.chatserver.Server;
 import org.example.chatserver.Utilities.ChatBotAPI;
 import org.example.chatserver.Utilities.Security;
 
@@ -13,17 +13,12 @@ import java.io.*;
 import java.net.Socket;
 import java.net.SocketException;
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
-import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 
@@ -105,6 +100,12 @@ public class ClientThreadHandle implements Runnable{
                 }
                 else if(message.startsWith("group-image")){
                     handleGroupImage(messageParts1);
+                }
+                else if(message.startsWith("load_history_single")){
+                    handleLoadHistorySingle(messageParts);
+                }
+                else if(message.startsWith("load_history_group")){
+                    handleLoadHistoryGroup(messageParts);
                 }
                 else if(message.startsWith("remove")){
                     running=false;
@@ -350,6 +351,21 @@ public class ClientThreadHandle implements Runnable{
         String messageSend="group-file|"+groupID+"|"+base64File+"|"+nameFile+"|"+timeSend+"|"+clientID;
         Model.getInstance().getMessageDAO().addMessageGroup(groupID,clientID,filePath,"File",LocalDateTime.parse(timeSend));
         Model.getInstance().getClientThreadManager().groupChat(groupID,clientID,messageSend);
+    }
+
+    public void handleLoadHistorySingle(String[] messageParts){
+        String clientID1=messageParts[1];
+        String clientID2=messageParts[2];
+        List<Message> messageList=Model.getInstance().getMessageDAO().getListMessageHistorySingle(clientID1,clientID2);
+        String messageListJSon=gson.toJson(messageList);
+        Model.getInstance().getClientThreadManager().sendHistoryMessageSingle(clientID1,clientID2,messageListJSon);
+    }
+
+    public void handleLoadHistoryGroup(String[] messageParts){
+        String groupID=messageParts[1];
+        List<Message> messageList =Model.getInstance().getMessageDAO().getListMessageHistoryGroup(groupID);
+        String messageListJSon=gson.toJson(messageList);
+        Model.getInstance().getClientThreadManager().sendHistoryMessageGroup(groupID,messageListJSon);
     }
 
     public void writeMessage(String message) {

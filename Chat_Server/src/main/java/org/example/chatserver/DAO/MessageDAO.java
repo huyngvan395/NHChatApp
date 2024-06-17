@@ -1,7 +1,12 @@
 package org.example.chatserver.DAO;
 
+import org.example.chatserver.Model.Message;
+import org.example.chatserver.Model.Model;
+
 import java.sql.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MessageDAO {
     private final Connection con=ConnectionDB.getConnectionDB();
@@ -35,4 +40,52 @@ public class MessageDAO {
             e.printStackTrace();
         }
     }
+
+    public List<Message> getListMessageHistorySingle(String ClientID1, String ClientID2){
+        String IDConversation=Model.getInstance().getConversationDAO().getConversationSingleID(ClientID1,ClientID2);
+        List<Message> list=new ArrayList<>();
+        PreparedStatement ps;
+        ResultSet rs;
+        try{
+            ps=con.prepareStatement("select * from message_single where ConversationID=?");
+            ps.setString(1, IDConversation);
+            rs=ps.executeQuery();
+            while(rs.next()){
+                String senderID=rs.getString("SenderID");
+                String messageContent=rs.getString("Message");
+                String messageType=rs.getString("MessageType");
+                LocalDateTime time=rs.getTimestamp("TimeSend").toLocalDateTime();
+                String timeSend=time.toString();
+                Message message =new Message(senderID, messageContent, messageType, timeSend);
+                list.add(message);
+            }
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    public List<Message> getListMessageHistoryGroup(String IDGroup){
+        List<Message> list=new ArrayList<>();
+        PreparedStatement ps;
+        ResultSet rs;
+        try{
+            ps=con.prepareStatement("select * from message_group where ConversationID=?");
+            ps.setString(1, IDGroup);
+            rs= ps.executeQuery();
+            while(rs.next()){
+                String senderID=rs.getString("SenderID");
+                String messageContent=rs.getString("Message");
+                String messageType=rs.getString("MessageType");
+                LocalDateTime time=rs.getTimestamp("TimeSend").toLocalDateTime();
+                String timeSend=time.toString();
+                Message message =new Message(senderID,messageContent,messageType,timeSend);
+                list.add(message);
+            }
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
+        return list;
+    }
+
 }

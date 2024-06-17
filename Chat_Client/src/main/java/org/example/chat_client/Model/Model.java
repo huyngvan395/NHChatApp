@@ -18,6 +18,8 @@ public class Model {
     private ObservableList<Client> clientOnlineList;
     private ObservableList<Client> listClient;
     private ObservableList<Group> groupList;
+    private ObservableList<Message> messageListSingle;
+    private ObservableList<Message> messageListGroup;
     private Client currentClient;
     private volatile boolean running;
     private ObjectProperty<Client> targetClient=new SimpleObjectProperty<>();
@@ -31,12 +33,16 @@ public class Model {
         this.clientOnlineList= FXCollections.observableArrayList();
         this.listClient=FXCollections.observableArrayList();
         this.groupList=FXCollections.observableArrayList();
-        running = true;
+        this.messageListSingle=FXCollections.observableArrayList();
+        this.messageListGroup=FXCollections.observableArrayList();
+        this.running = true;
         this.messageHandler = new MessageHandler();
         this.messageResponseQueue = new LinkedBlockingQueue<>(1);
         this.messageHandler.addMessageListener(new ClientOnlineListUpdateListener(clientOnlineList));
         this.messageHandler.addMessageListener(new ClientListUpdateListener(listClient));
         this.messageHandler.addMessageListener(new GroupListUpdateListener(groupList));
+        this.messageHandler.addMessageListener(new MessageSingleLoadListener(messageListSingle));
+        this.messageHandler.addMessageListener(new MessageGroupLoadListener(messageListGroup));
     }
 
     public static synchronized Model getInstance() {
@@ -68,6 +74,14 @@ public class Model {
 
     public ObservableList<Group> getGroupList() {
         return groupList;
+    }
+
+    public ObservableList<Message> getMessageListSingle(){
+        return messageListSingle;
+    }
+
+    public ObservableList<Message> getMessageListGroup(){
+        return messageListGroup;
     }
 
     public void startMessageReader() {

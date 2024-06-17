@@ -1,10 +1,8 @@
-package org.example.chat_client.Controller.Client.Message;
+package org.example.chat_client.Controller.Client.ChatBox;
 
 import javafx.application.Platform;
-import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
@@ -14,10 +12,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
-import org.example.chat_client.Model.Client;
-import org.example.chat_client.Model.DateTimeFormatMessage;
-import org.example.chat_client.Model.MessageListener;
-import org.example.chat_client.Model.Model;
+import org.example.chat_client.Model.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,6 +21,7 @@ import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.util.Base64;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class MessageChatGroupBoxController implements Initializable, MessageListener {
@@ -54,11 +50,13 @@ public class MessageChatGroupBoxController implements Initializable, MessageList
     public void initialize(URL location, ResourceBundle resources) {
         if(Model.getInstance().targetGroupObjectProperty().get() != null){
             setGUIChat();
+            loadHistoryMessage();
         }
         scrollToBottom();
         Model.getInstance().targetGroupObjectProperty().addListener(((observable, oldValue, newValue) ->{
             if(newValue!=null){
                 setGUIChat();
+                loadHistoryMessage();
             }
         }));
         sendMessage_btn.setOnAction(e->sendMessage());
@@ -155,7 +153,7 @@ public class MessageChatGroupBoxController implements Initializable, MessageList
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            String base64File=java.util.Base64.getEncoder().encodeToString(bytes);
+            String base64File= Base64.getEncoder().encodeToString(bytes);
             LocalDateTime localDateTime = LocalDateTime.now();
             String timeShow=DateTimeFormatMessage.formatDateTime(localDateTime);
             AnchorPane fileContain= Model.getInstance().getViewFactory().getFileSend(timeShow, localFile.getName());
@@ -172,6 +170,7 @@ public class MessageChatGroupBoxController implements Initializable, MessageList
 
     @Override
     public void onMessageReceived(String message) {
+        String currentClientID=Model.getInstance().getCurrentClient().getClientID();
         String targetGroupID;
         if(Model.getInstance().targetGroupObjectProperty().get()!=null){
             targetGroupID=Model.getInstance().targetGroupObjectProperty().get().getGroupID();
@@ -257,8 +256,78 @@ public class MessageChatGroupBoxController implements Initializable, MessageList
                         content_chat.requestLayout();
                         Platform.runLater(()->scrollToBottom());
                     }
+                }else if(message.startsWith("loadHistoryGroup")){
+                    content_chat.getChildren().clear();
+                    String IDGroup=messageParts1[2];
+                    if(Model.getInstance().getMessageListGroup()!=null){
+                        List<Message> listMessage=Model.getInstance().getMessageListGroup();
+                        for(Message messageOb: listMessage){
+                            Platform.runLater(()->{
+                                if(messageOb.getMessageType().equals("Text") && messageOb.getSenderID().equals(currentClientID) && Model.getInstance().targetGroupObjectProperty().get().getGroupID().equals(IDGroup)){
+                                    String timeShow=DateTimeFormatMessage.formatDateTime(LocalDateTime.parse(messageOb.getTimeSend()));
+                                    AnchorPane textPane=Model.getInstance().getViewFactory().getMessageSend(messageOb.getMessage().replace("<newline>","\n"), timeShow);
+                                    content_chat.getChildren().add(textPane);
+                                }else if(messageOb.getMessageType().equals("Text") && Model.getInstance().targetGroupObjectProperty().get().getGroupID().equals(IDGroup)){
+                                    String IDSender=messageOb.getSenderID();
+                                    Client Sender = null;
+                                    for(Client client:Model.getInstance().getListClient()){
+                                        if(client.getClientID().equals(IDSender)){
+                                            Sender=client;
+                                        }
+                                    }
+                                    String timeShow=DateTimeFormatMessage.formatDateTime(LocalDateTime.parse(messageOb.getTimeSend()));
+                                    AnchorPane textPane=Model.getInstance().getViewFactory().getMessageGroupReceive(Sender.getName(),messageOb.getMessage().replace("<newline>","\n"),timeShow, Sender.getImage());
+                                    content_chat.getChildren().add(textPane);
+                                    System.out.println("Target");
+                                }else if(messageOb.getMessageType().equals("Image") && messageOb.getSenderID().equals(currentClientID) && Model.getInstance().targetGroupObjectProperty().get().getGroupID().equals(IDGroup)) {
+                                    String timeShow=DateTimeFormatMessage.formatDateTime(LocalDateTime.parse(messageOb.getTimeSend()));
+                                    AnchorPane imagePane=Model.getInstance().getViewFactory().getImageSend(timeShow, messageOb.getMessage());
+                                    content_chat.getChildren().add(imagePane);
+                                }else if(messageOb.getMessageType().equals("Image") && Model.getInstance().targetGroupObjectProperty().get().getGroupID().equals(IDGroup)){
+                                    String IDSender=messageOb.getSenderID();
+                                    Client Sender = null;
+                                    for(Client client:Model.getInstance().getListClient()){
+                                        if(client.getClientID().equals(IDSender)){
+                                            Sender=client;
+                                        }
+                                    }
+                                    String timeShow=DateTimeFormatMessage.formatDateTime(LocalDateTime.parse(messageOb.getTimeSend()));
+                                    AnchorPane imagePane=Model.getInstance().getViewFactory().getImageGroupReceive(Sender.getName(),messageOb.getMessage(), timeShow, Sender.getImage());
+                                    content_chat.getChildren().add(imagePane);
+                                }else if(messageOb.getMessageType().equals("File") && messageOb.getSenderID().equals(currentClientID) && Model.getInstance().targetGroupObjectProperty().get().getGroupID().equals(IDGroup)){
+                                    String timeShow=DateTimeFormatMessage.formatDateTime(LocalDateTime.parse(messageOb.getTimeSend()));
+                                    int lastSlashIndex=messageOb.getMessage().lastIndexOf("/");
+                                    String fileName=messageOb.getMessage().substring(lastSlashIndex+1);
+                                    AnchorPane filePane=Model.getInstance().getViewFactory().getFileSend(timeShow,fileName);
+                                    content_chat.getChildren().add(filePane);
+                                }else if(messageOb.getMessageType().equals("File") && Model.getInstance().targetGroupObjectProperty().get().getGroupID().equals(IDGroup)){
+                                    String IDSender=messageOb.getSenderID();
+                                    Client Sender = null;
+                                    for(Client client:Model.getInstance().getListClient()){
+                                        if(client.getClientID().equals(IDSender)){
+                                            Sender=client;
+                                        }
+                                    }
+                                    String timeShow=DateTimeFormatMessage.formatDateTime(LocalDateTime.parse(messageOb.getTimeSend()));
+                                    int lastSlashIndex=messageOb.getMessage().lastIndexOf("/");
+                                    String fileName=messageOb.getMessage().substring(lastSlashIndex+1);
+                                    AnchorPane filePane=Model.getInstance().getViewFactory().getFileGroupReceive(Sender.getName(),fileName,timeShow,Sender.getImage());
+                                    content_chat.getChildren().add(filePane);
+                                }
+                                content_chat.requestLayout();
+                                Platform.runLater(()->scrollToBottom());
+                            });
+                        }
+                    }
                 }
             });
+        }
+    }
+
+    public void loadHistoryMessage(){
+        if(Model.getInstance().targetGroupObjectProperty().get()!=null){
+            String IDGroup=Model.getInstance().targetGroupObjectProperty().get().getGroupID();
+            Model.getInstance().getSocketClient().sendMessage("load_history_group/"+IDGroup);
         }
     }
 }
