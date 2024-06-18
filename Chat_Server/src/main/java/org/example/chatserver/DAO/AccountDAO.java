@@ -61,12 +61,12 @@ public class AccountDAO {
     public void addClient(String clientID, String clientName, String email, String password, String image) {
         PreparedStatement ps;
         try{
-            ps=con.prepareStatement("insert into client(ClientID, Name, Email, Password) values(?,?,?,?,?,?)");
+            ps=con.prepareStatement("insert into client(ClientID, Name, Email, Password,Image) values(?,?,?,?,?)");
             ps.setString(1,clientID);
             ps.setString(2,clientName);
-            ps.setString(4,email);
-            ps.setString(5,password);
-            ps.setString(6,image);
+            ps.setString(3,email);
+            ps.setString(4,password);
+            ps.setString(5,image);
             ps.executeUpdate();
         }catch (SQLException e){
             e.printStackTrace();
@@ -138,5 +138,47 @@ public class AccountDAO {
             e.printStackTrace();
         }
         return rs;
+    }
+
+    public void removeClient(String clientID) {
+        PreparedStatement psDeleteGroupMembers = null;
+        PreparedStatement psDeleteMessageGroup = null;
+        PreparedStatement psDeleteMessageSingle = null;
+        PreparedStatement psDeleteConversationSingle = null;
+        PreparedStatement psDeleteClient = null;
+
+        try {
+
+            String sqlDeleteGroupMembers = "DELETE FROM conversation_group_members WHERE ClientID = ?";
+            psDeleteGroupMembers = con.prepareStatement(sqlDeleteGroupMembers);
+            psDeleteGroupMembers.setString(1, clientID);
+            psDeleteGroupMembers.executeUpdate();
+
+            String sqlDeleteMessageGroup = "DELETE FROM message_group WHERE SenderID = ?";
+            psDeleteMessageGroup = con.prepareStatement(sqlDeleteMessageGroup);
+            psDeleteMessageGroup.setString(1, clientID);
+            psDeleteMessageGroup.executeUpdate();
+
+            String sqlDeleteMessageSingle = "DELETE FROM message_single WHERE SenderID = ?";
+            psDeleteMessageSingle = con.prepareStatement(sqlDeleteMessageSingle);
+            psDeleteMessageSingle.setString(1, clientID);
+            psDeleteMessageSingle.executeUpdate();
+
+            String sqlDeleteConversationSingle = "DELETE FROM conversation_single WHERE ClientID1 = ? OR ClientID2 = ?";
+            psDeleteConversationSingle = con.prepareStatement(sqlDeleteConversationSingle);
+            psDeleteConversationSingle.setString(1, clientID);
+            psDeleteConversationSingle.setString(2, clientID);
+            psDeleteConversationSingle.executeUpdate();
+
+            String sqlDeleteClient = "DELETE FROM client WHERE ClientID = ?";
+            psDeleteClient = con.prepareStatement(sqlDeleteClient);
+            psDeleteClient.setString(1, clientID);
+            psDeleteClient.executeUpdate();
+
+            System.out.println("Client deleted successfully!");
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }

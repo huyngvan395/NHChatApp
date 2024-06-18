@@ -3,6 +3,7 @@ package org.example.chat_client.Controller.Client.Setting;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
+import javafx.stage.Stage;
 import org.example.chat_client.Model.Model;
 import org.example.chat_client.View.MenuSettingOptions;
 
@@ -33,6 +34,9 @@ public class ClientSettingMenuController implements Initializable {
     }
 
     public void DeleteAccount(){
-
+        Model.getInstance().resetData();
+        Model.getInstance().getSocketClient().sendMessage("remove-acc");
+        Model.getInstance().getViewFactory().closeStage((Stage)delete_acc.getScene().getWindow());
+        Model.getInstance().getViewFactory().getMenuSettingOptions().set(MenuSettingOptions.DeleteAcc);
     }
 }

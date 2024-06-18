@@ -82,7 +82,7 @@
             <!-- Default configuration for running with: mvn clean javafx:run -->
             <id>default-cli</id>
             <configuration>
-              <mainClass>org.example.chat_client/org.example.chat_client.HelloApplication</mainClass>
+              <mainClass>org.example.chat_client/org.example.chat_client.App</mainClass>
               <launcher>app</launcher>
               <jlinkZipName>app</jlinkZipName>
               <jlinkImageName>app</jlinkImageName>

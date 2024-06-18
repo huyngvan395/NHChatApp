@@ -20,6 +20,7 @@ public class Model {
     private ObservableList<Group> groupList;
     private ObservableList<Message> messageListSingle;
     private ObservableList<Message> messageListGroup;
+    private ObservableList<Message> messageListBot;
     private Client currentClient;
     private volatile boolean running;
     private ObjectProperty<Client> targetClient=new SimpleObjectProperty<>();
@@ -35,6 +36,7 @@ public class Model {
         this.groupList=FXCollections.observableArrayList();
         this.messageListSingle=FXCollections.observableArrayList();
         this.messageListGroup=FXCollections.observableArrayList();
+        this.messageListBot=FXCollections.observableArrayList();
         this.running = true;
         this.messageHandler = new MessageHandler();
         this.messageResponseQueue = new LinkedBlockingQueue<>(1);
@@ -43,6 +45,7 @@ public class Model {
         this.messageHandler.addMessageListener(new GroupListUpdateListener(groupList));
         this.messageHandler.addMessageListener(new MessageSingleLoadListener(messageListSingle));
         this.messageHandler.addMessageListener(new MessageGroupLoadListener(messageListGroup));
+        this.messageHandler.addMessageListener(new MessageBotLoadListener(messageListBot));
     }
 
     public static synchronized Model getInstance() {
@@ -82,6 +85,10 @@ public class Model {
 
     public ObservableList<Message> getMessageListGroup(){
         return messageListGroup;
+    }
+
+    public ObservableList<Message> getMessageListBot(){
+        return messageListBot;
     }
 
     public void startMessageReader() {

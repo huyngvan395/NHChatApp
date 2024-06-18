@@ -8,7 +8,6 @@ import org.example.chatserver.DAO.ConversationDAO;
 import org.example.chatserver.DAO.ListClientDAO;
 import org.example.chatserver.DAO.MessageDAO;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -67,6 +66,15 @@ public class Model {
 
     public ListClientDAO getListClientDAO() {
         return listClientDAO;
+    }
+
+    public boolean checkClientLoggedIn(String ClientID) {
+        for (Client client : getClientOnlineList()) {
+            if (client.getClientID().equals(ClientID)) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }

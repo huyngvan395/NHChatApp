@@ -65,7 +65,7 @@ public class ClientThreadManager {
         String newClientJson=gson.toJson(newClient);
         for (ClientThreadHandle clientHandler : clientHandlers) {
             if(!clientHandler.getClientID().equals(newClient.getClientID())){
-                clientHandler.writeMessage("newClient/"+newClientJson);
+                clientHandler.writeMessage("newClientOnline|"+newClientJson);
             }
         }
         System.out.println("Sent new client to other clients");
@@ -79,7 +79,7 @@ public class ClientThreadManager {
             }
         }
         String listClientOnlineJson=gson.toJson(listClientTemp);
-        clientHandler.writeMessage("listOnline/"+listClientOnlineJson);
+        clientHandler.writeMessage("listOnline|"+listClientOnlineJson);
     }
 
     public void sendRemoveClient(String message){
@@ -92,7 +92,18 @@ public class ClientThreadManager {
         List<Client> listClient=Model.getInstance().getListClientDAO().getListClient();
         listClient.removeIf(client -> client.getClientID().equals(clientThreadHandle.getClientID()));
         String listClientJson=gson.toJson(listClient);
-        clientThreadHandle.writeMessage("listClient/"+listClientJson);
+        clientThreadHandle.writeMessage("listClient|"+listClientJson);
+    }
+
+    public void setListClient(ClientThreadHandle clientThreadHandle){
+        for(ClientThreadHandle clientHandler:clientHandlers){
+            if(!clientHandler.getClientID().equals(clientThreadHandle.getClientID())){
+                List<Client> listClient=Model.getInstance().getListClientDAO().getListClient();
+                listClient.removeIf(client -> client.getClientID().equals(clientHandler.getClientID()));
+                String listClientJson=gson.toJson(listClient);
+                clientHandler.writeMessage("listClient|"+listClientJson);
+            }
+        }
     }
 
     public void sendListGroup(ClientThreadHandle clientThreadHandle){
@@ -113,22 +124,4 @@ public class ClientThreadManager {
         }
     }
 
-    public void sendHistoryMessageSingle(String ClientID1, String ClientID2, String message){
-        for(ClientThreadHandle clientThreadHandle:clientHandlers){
-            if(clientThreadHandle.getClientID().equals(ClientID1) || clientThreadHandle.getClientID().equals(ClientID2)){
-                clientThreadHandle.writeMessage("loadHistorySingle|"+message);
-            }
-        }
-    }
-
-    public void sendHistoryMessageGroup(String IDGroup, String message){
-        List<String> listIDMember=Model.getInstance().getConversationDAO().getIDMembers(IDGroup);
-        for(String IDMember:listIDMember){
-            for(ClientThreadHandle clientHandler : clientHandlers){
-                if(IDMember.equals(clientHandler.getClientID())){
-                    clientHandler.writeMessage("loadHistoryGroup|"+message+"|"+IDGroup);
-                }
-            }
-        }
-    }
 }

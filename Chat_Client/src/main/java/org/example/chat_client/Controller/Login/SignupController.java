@@ -47,6 +47,7 @@ public class SignupController implements Initializable {
     private String base64ImageAvatar;
     private String avatarName;
     private String pathAvatar;
+    private File imageFile;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -61,7 +62,7 @@ public class SignupController implements Initializable {
     }
 
     public void Signup(){
-        if(name.getText().isEmpty() || ID.getText().isEmpty() || password.getText().isEmpty() || confirm_pass.getText().isEmpty() || email.getText().isEmpty() || base64ImageAvatar.isEmpty() ){
+        if(name.getText().isEmpty() || ID.getText().isEmpty() || password.getText().isEmpty() || confirm_pass.getText().isEmpty() || email.getText().isEmpty() || base64ImageAvatar==null ){
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Error");
             alert.setHeaderText(null);
@@ -72,7 +73,7 @@ public class SignupController implements Initializable {
             String name_value=name.getText();
             String password_value=password.isVisible()? password.getText() : password_shown.getText();
             String email_value=email.getText();
-            saveAvatar(setImage_Avatar());
+            saveAvatar(this.imageFile);
             String message="signup|"+ID_value+"|"+name_value+"|"+email_value+"|"+password_value+"|"+base64ImageAvatar+"|"+avatarName+"|"+pathAvatar;
             Model.getInstance().getSocketClient().sendMessage(message);
             if(Model.getInstance().getSocketClient().receiveResponse().endsWith("success")){
@@ -92,7 +93,7 @@ public class SignupController implements Initializable {
         }
     }
 
-    public File setImage_Avatar(){
+    public void setImage_Avatar(){
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Choose Avatar");
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Image Files", "*.jpg", "*.png", "*.jpeg", "*.gif"));
@@ -107,8 +108,8 @@ public class SignupController implements Initializable {
             this.base64ImageAvatar= Base64.getEncoder().encodeToString(bytes);
             Image image =new Image(imageFile.toURI().toString());
             image_avatar.setImage(image);
+            this.imageFile=imageFile;
         }
-        return imageFile;
     }
 
     public void saveAvatar(File imageFile){

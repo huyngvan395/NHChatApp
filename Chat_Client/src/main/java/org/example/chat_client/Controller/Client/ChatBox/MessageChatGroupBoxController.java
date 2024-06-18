@@ -52,7 +52,7 @@ public class MessageChatGroupBoxController implements Initializable, MessageList
             setGUIChat();
             loadHistoryMessage();
         }
-        scrollToBottom();
+        content_chat.heightProperty().addListener(((observable, oldValue, newValue) -> scrollToBottom()));
         Model.getInstance().targetGroupObjectProperty().addListener(((observable, oldValue, newValue) ->{
             if(newValue!=null){
                 setGUIChat();
@@ -92,8 +92,6 @@ public class MessageChatGroupBoxController implements Initializable, MessageList
             content_chat.getChildren().add(messageContain);
             Model.getInstance().getSocketClient().sendMessage("group-message/"+Enter_message.getText().replace("\n", "<newline>")+"/"+Model.getInstance().targetGroupObjectProperty().get().getGroupID()+"/"+ localDateTime);
             Enter_message.clear();
-            content_chat.requestLayout();
-            Platform.runLater(()->scrollToBottom());
         }
     }
 
@@ -127,8 +125,6 @@ public class MessageChatGroupBoxController implements Initializable, MessageList
             AnchorPane imageContain= Model.getInstance().getViewFactory().getImageSend(timeShow, localFile.toURI().toString());
             content_chat.getChildren().addAll(imageContain);
             Model.getInstance().getSocketClient().sendMessage("group-image|"+base64Image+"|"+localFile.getName()+"|"+ localFile.toURI()+"|"+Model.getInstance().targetGroupObjectProperty().get().getGroupID()+"|"+localDateTime);
-            content_chat.requestLayout();
-            Platform.runLater(()->scrollToBottom());
         }
     }
 
@@ -159,13 +155,7 @@ public class MessageChatGroupBoxController implements Initializable, MessageList
             AnchorPane fileContain= Model.getInstance().getViewFactory().getFileSend(timeShow, localFile.getName());
             content_chat.getChildren().addAll(fileContain);
             Model.getInstance().getSocketClient().sendMessage("group-file|"+base64File+"|"+localFile.getName()+"|"+localFile.toURI()+"|"+Model.getInstance().targetGroupObjectProperty().get().getGroupID()+"|"+localDateTime);
-            content_chat.requestLayout();
-            Platform.runLater(()->scrollToBottom());
         }
-    }
-
-    private void scrollToBottom(){
-        scrollPane.setVvalue(1.0);
     }
 
     @Override
@@ -195,8 +185,6 @@ public class MessageChatGroupBoxController implements Initializable, MessageList
                         }
                         AnchorPane messagePane=Model.getInstance().getViewFactory().getMessageGroupReceive(clientSend.getName(),messageParts[2].replace("<newline>", "\n"),timeShow, clientSend.getImage());
                         content_chat.getChildren().add(messagePane);
-                        content_chat.requestLayout();
-                        Platform.runLater(()->scrollToBottom());
                     }
                 }else if(message.startsWith("group-image")){
                     if(targetGroupID.equals(messageParts1[1])){
@@ -224,8 +212,6 @@ public class MessageChatGroupBoxController implements Initializable, MessageList
                         String timeShow=DateTimeFormatMessage.formatDateTime(localDateTime);
                         AnchorPane imagePane=Model.getInstance().getViewFactory().getImageGroupReceive(clientSend.getName(),imageFile.toURI().toString(),timeShow, clientSend.getImage());
                         content_chat.getChildren().addAll(imagePane);
-                        content_chat.requestLayout();
-                        Platform.runLater(()->scrollToBottom());
                     }
                 }else if(message.startsWith("group-file")){
                     if(targetGroupID.equals(messageParts1[1])){
@@ -253,11 +239,10 @@ public class MessageChatGroupBoxController implements Initializable, MessageList
                         String timeShow=DateTimeFormatMessage.formatDateTime(localDateTime);
                         AnchorPane filePane=Model.getInstance().getViewFactory().getFileGroupReceive(clientSend.getName(),file.getName(),timeShow, clientSend.getImage());
                         content_chat.getChildren().addAll(filePane);
-                        content_chat.requestLayout();
-                        Platform.runLater(()->scrollToBottom());
                     }
                 }else if(message.startsWith("loadHistoryGroup")){
                     content_chat.getChildren().clear();
+                    content_chat.requestLayout();
                     String IDGroup=messageParts1[2];
                     if(Model.getInstance().getMessageListGroup()!=null){
                         List<Message> listMessage=Model.getInstance().getMessageListGroup();
@@ -314,8 +299,6 @@ public class MessageChatGroupBoxController implements Initializable, MessageList
                                     AnchorPane filePane=Model.getInstance().getViewFactory().getFileGroupReceive(Sender.getName(),fileName,timeShow,Sender.getImage());
                                     content_chat.getChildren().add(filePane);
                                 }
-                                content_chat.requestLayout();
-                                Platform.runLater(()->scrollToBottom());
                             });
                         }
                     }
@@ -329,5 +312,12 @@ public class MessageChatGroupBoxController implements Initializable, MessageList
             String IDGroup=Model.getInstance().targetGroupObjectProperty().get().getGroupID();
             Model.getInstance().getSocketClient().sendMessage("load_history_group/"+IDGroup);
         }
+    }
+
+    private void scrollToBottom(){
+        Platform.runLater(()->{
+            content_chat.layout();
+            scrollPane.setVvalue(1.0);
+        });
     }
 }

@@ -170,7 +170,7 @@ public class ViewFactory {
 
     public AnchorPane getInitialSingleBox(){
         try{
-            InitialSingleBox=new FXMLLoader(getClass().getResource("/FXMl/Client/initial_chat_single_box.fxml")).load();
+            InitialSingleBox=new FXMLLoader(getClass().getResource("/FXML/Client/ChatBox/initial_chat_single_box.fxml")).load();
         }catch (IOException e){
             e.printStackTrace();
         }
@@ -179,7 +179,7 @@ public class ViewFactory {
 
     public AnchorPane getInitialGroupBox(){
         try{
-            InitialGroupBox=new FXMLLoader(getClass().getResource("/FXMl/Client/initial_chat_group_box.fxml")).load();
+            InitialGroupBox=new FXMLLoader(getClass().getResource("/FXML/Client/ChatBox/initial_chat_group_box.fxml")).load();
         }catch (IOException e){
             e.printStackTrace();
         }
@@ -188,7 +188,7 @@ public class ViewFactory {
 
     public BorderPane getMessageSingleChatBox() {
         try{
-            MessageSingleChatBox=new FXMLLoader(getClass().getResource("/FXML/Client/message_chat_single_box.fxml")).load();
+            MessageSingleChatBox=new FXMLLoader(getClass().getResource("/FXML/Client/ChatBox/message_chat_single_box.fxml")).load();
         }catch (IOException e){
             e.printStackTrace();
         }
@@ -197,7 +197,7 @@ public class ViewFactory {
 
     public BorderPane getMessageGroupChatBox(){
         try{
-            MessageGroupChatBox=new FXMLLoader(getClass().getResource("/FXML/Client/message_chat_group_box.fxml")).load();
+            MessageGroupChatBox=new FXMLLoader(getClass().getResource("/FXML/Client/ChatBox/message_chat_group_box.fxml")).load();
         }catch (IOException e){
             e.printStackTrace();
         }
@@ -206,7 +206,7 @@ public class ViewFactory {
 
     public BorderPane getMessageChatBoxBot() {
         try{
-            MessageChatBoxBot=new FXMLLoader(getClass().getResource("/FXML/Client/message_chat_box_bot.fxml")).load();
+            MessageChatBoxBot=new FXMLLoader(getClass().getResource("/FXML/Client/ChatBox/message_chat_box_bot.fxml")).load();
         }catch(IOException e){
             e.printStackTrace();
         }

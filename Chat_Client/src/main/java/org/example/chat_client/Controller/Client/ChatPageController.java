@@ -3,7 +3,9 @@ package org.example.chat_client.Controller.Client;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.layout.BorderPane;
+import javafx.stage.Stage;
 import org.example.chat_client.Model.Model;
+import org.example.chat_client.View.MenuSettingOptions;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -38,6 +40,11 @@ public class ChatPageController implements Initializable {
                         chat_page.setRight(Model.getInstance().getViewFactory().getInitialGroupBox());
                     }
                 }
+            }
+        });
+        Model.getInstance().getViewFactory().getMenuSettingOptions().addListener((observable, oldValue, newValue) -> {
+            if(newValue.equals(MenuSettingOptions.DeleteAcc)){
+                Model.getInstance().getViewFactory().closeStage((Stage)chat_page.getScene().getWindow());
             }
         });
     }

@@ -8,7 +8,7 @@
 <?import org.kordamp.ikonli.javafx.FontIcon?>
 
 <AnchorPane prefWidth="600.0" styleClass="container" stylesheets="@../../../CSS/Client/File/file_chat.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.chat_client.Controller.Client.File.FileSendController">
-   <AnchorPane layoutX="185.0" layoutY="25.0" prefHeight="88.0" prefWidth="400.0" styleClass="container-file">
+   <AnchorPane layoutX="170.0" layoutY="25.0" prefHeight="88.0" prefWidth="400.0" styleClass="container-file">
       <Label fx:id="file_name" layoutX="14.0" layoutY="14.0" maxWidth="300.0" styleClass="name" text="File name">
          <font>
             <Font name="Arial Bold" size="16.0" />

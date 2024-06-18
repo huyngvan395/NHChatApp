@@ -16,11 +16,16 @@ public class ClientListUpdateListener implements MessageListener{
     }
     @Override
     public void onMessageReceived(String message) {
-        String[] messageParts=message.split("/");
+        String[] messageParts=message.split("\\|");
         if(message.startsWith("listClient")){
             Platform.runLater(()->{
                 List<Client> list=gson.fromJson(messageParts[1], new TypeToken<List<Client>>(){}.getType());
                 clientList.setAll(list);
+            });
+        }else if(message.startsWith("removeClientInList")){
+            Platform.runLater(()->{
+                String clientID=messageParts[1];
+                clientList.removeIf(client -> client.getClientID().equals(clientID));
             });
         }
     }

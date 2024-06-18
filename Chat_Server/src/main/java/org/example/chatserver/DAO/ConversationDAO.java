@@ -31,7 +31,23 @@ public class ConversationDAO {
         return null;
     }
 
-    public boolean checkConversationExist(String SenderID, String ReceiverID){
+    public String getConversationBotID(String ClientID){
+        PreparedStatement ps=null;
+        ResultSet rs=null;
+        try{
+            ps=con.prepareStatement("select ConversationID from conversation_bot where ClientID=?");
+            ps.setString(1, ClientID);
+            rs=ps.executeQuery();
+            if(rs.next()){
+                return rs.getString(1);
+            }
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public boolean checkConversationSingleExist(String SenderID, String ReceiverID){
         PreparedStatement ps = null;
         ResultSet rs = null;
         try{
@@ -50,7 +66,23 @@ public class ConversationDAO {
         return false;
     }
 
-    public void addConversationSingle(String SenderID, String ReceiverID) {
+    public boolean checkConversationBotExist(String SenderID){
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        try{
+            ps=con.prepareStatement("select ConversationID from conversation_bot where ClientID=?");
+            ps.setString(1, SenderID);
+            rs=ps.executeQuery();
+            if(rs.next()){
+                return true;
+            }
+        } catch (SQLException e){
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public void createConversationSingle(String SenderID, String ReceiverID) {
         PreparedStatement ps = null;
         try{
             ps=con.prepareStatement("insert into conversation_single(ClientID1,ClientID2) values (?,?)");
@@ -69,6 +101,18 @@ public class ConversationDAO {
             ps=con.prepareStatement("insert into conversation_group(GroupName,Image_Group) values (?,?)");
             ps.setString(1, nameGroup);
             ps.setString(2, imagePath);
+            ps.executeUpdate();
+        }catch(SQLException e){
+            e.printStackTrace();
+        }
+    }
+
+    public void createConversationBot(String SenderID){
+        PreparedStatement ps = null;
+        try{
+            ps=con.prepareStatement("insert into conversation_bot(Chatbot,ClientID) values (?,?)");
+            ps.setString(1, "chatbot");
+            ps.setString(2, SenderID);
             ps.executeUpdate();
         }catch(SQLException e){
             e.printStackTrace();

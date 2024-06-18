@@ -18,9 +18,9 @@ public class ClientOnlineListUpdateListener implements MessageListener {
     @Override
     public void onMessageReceived(String message) {
         if(Model.getInstance().isRunning()){
-            String[] messageParts = message.split("/");
+            String[] messageParts = message.split("\\|");
 
-            if (message.startsWith("newClient")) {
+            if (message.startsWith("newClientOnline")) {
                 Platform.runLater(() -> {
                     Client newClient = gson.fromJson(messageParts[1], Client.class);
                     clientOnlineList.add(newClient);

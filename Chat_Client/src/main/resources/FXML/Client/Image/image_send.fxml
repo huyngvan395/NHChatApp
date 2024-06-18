@@ -11,7 +11,7 @@
 <?import org.kordamp.ikonli.javafx.FontIcon?>
 
 <AnchorPane prefWidth="600.0" styleClass="container" stylesheets="@../../../CSS/Client/Image/image_chat.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.chat_client.Controller.Client.Image.ImageSendController">
-    <AnchorPane layoutX="250.0" layoutY="39.0" prefHeight="255.0" prefWidth="340.0" styleClass="container-img">
+    <AnchorPane layoutX="235.0" layoutY="39.0" prefHeight="255.0" prefWidth="340.0" styleClass="container-img">
         <ImageView fx:id="image_contain" fitHeight="255.0" fitWidth="340.0" pickOnBounds="true">
             <clip>
                 <Rectangle arcHeight="20" arcWidth="20" height="250.0" layoutX="2" layoutY="2" width="335.0" />
@@ -19,7 +19,7 @@
             <Image url="@../../../Image/bg_appchat.png" />
         </ImageView>
     </AnchorPane>
-    <Button fx:id="download" layoutX="210.0" layoutY="256.0" mnemonicParsing="false" styleClass="button-download">
+    <Button fx:id="download" layoutX="195.0" layoutY="256.0" mnemonicParsing="false" styleClass="button-download">
         <graphic>
             <FontIcon iconLiteral="fa-download" iconSize="25" />
         </graphic>

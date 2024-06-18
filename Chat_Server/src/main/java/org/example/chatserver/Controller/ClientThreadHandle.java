@@ -85,7 +85,7 @@ public class ClientThreadHandle implements Runnable{
                     handleChatBotMessage(messageParts);
                 }
                 else if(message.startsWith("logout")){
-                    Model.getInstance().getClientThreadManager().sendRemoveClient("removeClientOnline/"+clientID);
+                    Model.getInstance().getClientThreadManager().sendRemoveClient("removeClientOnline|"+clientID);
                     Model.getInstance().removeClientOnlineList(clientID);
                     this.clientID="";
                 }
@@ -107,11 +107,24 @@ public class ClientThreadHandle implements Runnable{
                 else if(message.startsWith("load_history_group")){
                     handleLoadHistoryGroup(messageParts);
                 }
+                else if(message.startsWith("load_history_bot")){
+                    handleLoadHistoryBot(messageParts);
+                }
                 else if(message.startsWith("remove")){
                     running=false;
                     Model.getInstance().getClientThreadManager().removeClientHandler(this);
                     Model.getInstance().removeClientOnlineList(clientID);
-                    Model.getInstance().getClientThreadManager().sendRemoveClient("removeClientOnline/"+clientID);
+                    Model.getInstance().getClientThreadManager().sendRemoveClient("removeClientOnline|"+clientID);
+                    this.clientID="";
+                }
+                else if(message.startsWith("remove-acc")){
+                    running=false;
+                    Model.getInstance().getAccountDAO().removeClient(clientID);
+                    Model.getInstance().removeClientOnlineList(clientID);
+                    Model.getInstance().getClientThreadManager().sendRemoveClient("removeClientOnline|"+clientID);
+                    Model.getInstance().getClientThreadManager().sendRemoveClient("removeClientInList|"+clientID);
+                    Model.getInstance().getClientThreadManager().sendListClient(this);
+                    this.clientID="";
                 }
             }
         }catch (SocketException e){
@@ -161,15 +174,20 @@ public class ClientThreadHandle implements Runnable{
                 name=rs.getString("Name");
                 image=rs.getString("Image");
             }
-            String messageToClient = "login/" + clientID +"/" + name+"/" + email +"/"+ image + "/success";
-            Client client=new Client(clientID,name,email,image);
-            this.writeMessage(messageToClient);
-            Model.getInstance().getClientThreadManager().sendInfoNewClientToOthers(client);
-            Model.getInstance().getClientThreadManager().sendListOnlineClient(this);
-            Model.getInstance().addClientOnlineList(client);
-            Model.getInstance().getClientThreadManager().sendListClient(this);
-            Model.getInstance().getClientThreadManager().sendListGroup(this);
-            System.out.println("Client logged in and info sent to others");
+            if(Model.getInstance().checkClientLoggedIn(clientID)){
+                String messageToClient = "logged-in";
+                this.writeMessage(messageToClient);
+            }else{
+                String messageToClient = "login|" + clientID +"|" + name+"|" + email +"|"+ image + "|success";
+                Client client=new Client(clientID,name,email,image);
+                this.writeMessage(messageToClient);
+                Model.getInstance().getClientThreadManager().sendInfoNewClientToOthers(client);
+                Model.getInstance().getClientThreadManager().sendListOnlineClient(this);
+                Model.getInstance().addClientOnlineList(client);
+                Model.getInstance().getClientThreadManager().sendListClient(this);
+                Model.getInstance().getClientThreadManager().sendListGroup(this);
+                System.out.println("Client logged in and info sent to others");
+            }
         } else {
             String messageToClient = "login-failed";
             writeMessage(messageToClient);
@@ -196,6 +214,7 @@ public class ClientThreadHandle implements Runnable{
         }
         Model.getInstance().getAccountDAO().addClient(ID, name, email, encodePass, image);
         this.writeMessage("signup/" + ID + "/success");
+        Model.getInstance().getClientThreadManager().setListClient(this);
     }
 
     public void handleSingleMessage(String[] messageParts) throws IOException{
@@ -203,8 +222,8 @@ public class ClientThreadHandle implements Runnable{
         String ReceiverID = messageParts[2];
         String timeSend= messageParts[3];
         String messageSend="single-message/"+ReceiverID+"/"+messageSendFromClient+"/"+timeSend+"/"+clientID;
-        if(!Model.getInstance().getConversationDAO().checkConversationExist(clientID, ReceiverID)){
-            Model.getInstance().getConversationDAO().addConversationSingle(clientID, ReceiverID);
+        if(!Model.getInstance().getConversationDAO().checkConversationSingleExist(clientID, ReceiverID)){
+            Model.getInstance().getConversationDAO().createConversationSingle(clientID, ReceiverID);
         }
         String ID=Model.getInstance().getConversationDAO().getConversationSingleID(clientID, ReceiverID);
         Model.getInstance().getMessageDAO().addMessageSingle(ID, clientID, messageSendFromClient, "Text",LocalDateTime.parse(timeSend));
@@ -226,9 +245,9 @@ public class ClientThreadHandle implements Runnable{
         File file=new File(localDir,nameFile);
         Files.write(file.toPath(), fileBytes);
         String messageSend="single-file|"+ReceiverID+"|"+base64File+"|"+nameFile+"|"+timeSend+"|"+clientID;
-        System.out.println(Model.getInstance().getConversationDAO().checkConversationExist(clientID, ReceiverID));
-        if(!Model.getInstance().getConversationDAO().checkConversationExist(clientID, ReceiverID)){
-            Model.getInstance().getConversationDAO().addConversationSingle(clientID, ReceiverID);
+        System.out.println(Model.getInstance().getConversationDAO().checkConversationSingleExist(clientID, ReceiverID));
+        if(!Model.getInstance().getConversationDAO().checkConversationSingleExist(clientID, ReceiverID)){
+            Model.getInstance().getConversationDAO().createConversationSingle(clientID, ReceiverID);
         }
         String ID=Model.getInstance().getConversationDAO().getConversationSingleID(clientID, ReceiverID);
         Model.getInstance().getMessageDAO().addMessageSingle(ID, clientID, filePath,"File",LocalDateTime.parse(timeSend));
@@ -249,9 +268,9 @@ public class ClientThreadHandle implements Runnable{
         File imageFile=new File(localDir,nameImage);
         Files.write(imageFile.toPath(), imageBytes);
         String messageSend="single-image|"+ReceiverID+"|"+base64Image+"|"+nameImage+"|"+timeSend+"|"+clientID;
-        System.out.println(Model.getInstance().getConversationDAO().checkConversationExist(clientID, ReceiverID));
-        if(!Model.getInstance().getConversationDAO().checkConversationExist(clientID, ReceiverID)){
-            Model.getInstance().getConversationDAO().addConversationSingle(clientID, ReceiverID);
+        System.out.println(Model.getInstance().getConversationDAO().checkConversationSingleExist(clientID, ReceiverID));
+        if(!Model.getInstance().getConversationDAO().checkConversationSingleExist(clientID, ReceiverID)){
+            Model.getInstance().getConversationDAO().createConversationSingle(clientID, ReceiverID);
         }
         String ID=Model.getInstance().getConversationDAO().getConversationSingleID(clientID, ReceiverID);
         Model.getInstance().getMessageDAO().addMessageSingle(ID, clientID, imagePath, "Image",LocalDateTime.parse(timeSend));
@@ -274,11 +293,19 @@ public class ClientThreadHandle implements Runnable{
     }
 
     public void handleChatBotMessage(String[] messageParts) throws IOException{
-        String response= ChatBotAPI.sendMessageToAPI(messageParts[1]);
+        String messageFromClient=messageParts[1];
+        String SenderID=messageParts[2];
+        LocalDateTime timeSend=LocalDateTime.parse(messageParts[3]);
+        if(!Model.getInstance().getConversationDAO().checkConversationBotExist(SenderID)){
+            Model.getInstance().getConversationDAO().createConversationBot(SenderID);
+        }
+        String ID=Model.getInstance().getConversationDAO().getConversationBotID(SenderID);
+        Model.getInstance().getMessageDAO().addMessageBot(ID,clientID,messageFromClient,"Text",timeSend);
+        String response= ChatBotAPI.sendMessageToAPI(messageFromClient);
         String safeResponse = response.replace("\n", "<br>").replace("\r", " ").replace("*", " ");
         LocalDateTime localDateTime = LocalDateTime.now();
-        String timeShow=formatDateTime(localDateTime);
-        String messageResponse= "chatbot_response/"+safeResponse+"/"+timeShow;
+        String messageResponse= "chatbot_response/"+safeResponse+"/"+localDateTime;
+        Model.getInstance().getMessageDAO().addMessageBot(ID,"chatbot",safeResponse,"Text",localDateTime);
         Model.getInstance().getClientThreadManager().chatbot(clientID, messageResponse);
         System.out.println(messageResponse);
     }
@@ -354,18 +381,24 @@ public class ClientThreadHandle implements Runnable{
     }
 
     public void handleLoadHistorySingle(String[] messageParts){
-        String clientID1=messageParts[1];
-        String clientID2=messageParts[2];
-        List<Message> messageList=Model.getInstance().getMessageDAO().getListMessageHistorySingle(clientID1,clientID2);
+        String targetClient=messageParts[1];
+        List<Message> messageList=Model.getInstance().getMessageDAO().getListMessageHistorySingle(clientID,targetClient);
         String messageListJSon=gson.toJson(messageList);
-        Model.getInstance().getClientThreadManager().sendHistoryMessageSingle(clientID1,clientID2,messageListJSon);
+        this.writeMessage("loadHistorySingle|"+messageListJSon);
     }
 
     public void handleLoadHistoryGroup(String[] messageParts){
         String groupID=messageParts[1];
         List<Message> messageList =Model.getInstance().getMessageDAO().getListMessageHistoryGroup(groupID);
         String messageListJSon=gson.toJson(messageList);
-        Model.getInstance().getClientThreadManager().sendHistoryMessageGroup(groupID,messageListJSon);
+        this.writeMessage("loadHistoryGroup|"+messageListJSon+"|"+groupID);
+    }
+
+    public void handleLoadHistoryBot(String[] messageParts){
+        String clientID=messageParts[1];
+        List<Message> messageList= Model.getInstance().getMessageDAO().getListMessageHistoryBot(clientID);
+        String messageListJSon=gson.toJson(messageList);
+        this.writeMessage("loadHistoryBot|"+messageListJSon);
     }
 
     public void writeMessage(String message) {
@@ -393,22 +426,22 @@ public class ClientThreadHandle implements Runnable{
         return clientID;
     }
 
-    public static String formatDateTime(LocalDateTime targetDateTime) {
-
-        LocalDateTime now = LocalDateTime.now();
-
-        Duration duration = Duration.between(targetDateTime, now);
-        String formattedDateTime;
-        if (duration.toDays() == 0) {
-            formattedDateTime = targetDateTime.format(DateTimeFormatter.ofPattern("HH:mm"));
-        } else if (duration.toDays() == 1) {
-            formattedDateTime = "yesterday " + targetDateTime.format(DateTimeFormatter.ofPattern("HH:mm"));
-        } else if (duration.toDays() > 1 && duration.toDays() <= 7) {
-            formattedDateTime = targetDateTime.format(DateTimeFormatter.ofPattern("E HH:mm"));
-        } else {
-            formattedDateTime = targetDateTime.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
-        }
-
-        return formattedDateTime;
-    }
+//    public static String formatDateTime(LocalDateTime targetDateTime) {
+//
+//        LocalDateTime now = LocalDateTime.now();
+//
+//        Duration duration = Duration.between(targetDateTime, now);
+//        String formattedDateTime;
+//        if (duration.toDays() == 0) {
+//            formattedDateTime = targetDateTime.format(DateTimeFormatter.ofPattern("HH:mm"));
+//        } else if (duration.toDays() == 1) {
+//            formattedDateTime = "yesterday " + targetDateTime.format(DateTimeFormatter.ofPattern("HH:mm"));
+//        } else if (duration.toDays() > 1 && duration.toDays() <= 7) {
+//            formattedDateTime = targetDateTime.format(DateTimeFormatter.ofPattern("E HH:mm"));
+//        } else {
+//            formattedDateTime = targetDateTime.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
+//        }
+//
+//        return formattedDateTime;
+//    }
 }

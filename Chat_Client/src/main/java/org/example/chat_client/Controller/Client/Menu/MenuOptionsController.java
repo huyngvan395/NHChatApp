@@ -3,6 +3,8 @@ package org.example.chat_client.Controller.Client.Menu;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 import org.example.chat_client.Model.Model;
 import org.example.chat_client.View.MenuChatOptions;
@@ -11,6 +13,8 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 public class MenuOptionsController implements Initializable {
+    @FXML
+    private ImageView image_avatar;
     @FXML
     private Button chat_single;
     @FXML
@@ -26,6 +30,7 @@ public class MenuOptionsController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        setImage_avatar();
         chat_single.setOnAction(event -> ChatSingle());
         chat_group.setOnAction(event -> ChatGroup());
         chat_bot.setOnAction(event -> ChatBot());
@@ -60,5 +65,13 @@ public class MenuOptionsController implements Initializable {
 
     public void CreateGroup(){
         Model.getInstance().getViewFactory().showAddClientToGroup();
+    }
+
+    public void setImage_avatar(){
+        String imageAvatar=Model.getInstance().getCurrentClient().getImage();
+        if(!imageAvatar.equals("null")){
+            Image image=new Image(imageAvatar);
+            image_avatar.setImage(image);
+        }
     }
 }

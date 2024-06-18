@@ -51,8 +51,10 @@ public class LoginController implements Initializable {
             System.out.println(response+"\n");
             if(response.endsWith("success")){
                 String[] messageParts=response.split("/");
-                Client client =new Client(messageParts[1], messageParts[2], messageParts[3], messageParts[4]);
+                String[] messageParts1=response.split("\\|");
+                Client client =new Client(messageParts1[1], messageParts1[2], messageParts1[3], messageParts1[4]);
                 Model.getInstance().setCurrentClient(client);
+                System.out.println(Model.getInstance().getCurrentClient().getImage());
                 Model.getInstance().getViewFactory().closeStage((Stage)signup.getScene().getWindow());
                 Model.getInstance().getViewFactory().showClientPage();
                 if(!Model.getInstance().isRunning()){
@@ -60,6 +62,18 @@ public class LoginController implements Initializable {
                 }
                 Model.getInstance().startMessageReader();
                 Model.getInstance().processMessages();
+            }else if(response.startsWith("login-failed")){
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error");
+                alert.setHeaderText(null);
+                alert.setContentText("Email or password is incorrect");
+                alert.showAndWait();
+            }else if(response.startsWith("logged-in")){
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error");
+                alert.setHeaderText(null);
+                alert.setContentText("This account is logged in");
+                alert.showAndWait();
             }
         }
     }

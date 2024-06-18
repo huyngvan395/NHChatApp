@@ -41,7 +41,7 @@
          </RadialGradient>
       </stroke>
    </Line>
-   <ScrollPane hbarPolicy="NEVER" layoutX="5.0" layoutY="54.0" prefHeight="94.0" prefWidth="329.0">
+   <ScrollPane vbarPolicy="NEVER" layoutX="5.0" layoutY="54.0" prefHeight="94.0" prefWidth="329.0">
       <ListView fx:id="listView_ClientOnline" orientation="HORIZONTAL" prefHeight="90.0" prefWidth="327.0" styleClass="listView" />
    </ScrollPane>
    <ScrollPane hbarPolicy="NEVER" layoutX="2.0" layoutY="160.0" prefHeight="489.0" prefWidth="340.0">

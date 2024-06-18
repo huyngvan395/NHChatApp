@@ -31,7 +31,7 @@
     </Button>
     <Button fx:id="client_personal" layoutX="5.0" layoutY="22.0" mnemonicParsing="false" prefHeight="57.0" prefWidth="43.0" styleClass="button-user">
         <graphic>
-            <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true">
+            <ImageView fx:id="image_avatar" fitHeight="50.0" fitWidth="50.0" pickOnBounds="true">
                 <clip>
                     <Circle centerX="25" centerY="25" radius="25" />
                 </clip>

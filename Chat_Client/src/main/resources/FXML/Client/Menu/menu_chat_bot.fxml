@@ -15,7 +15,7 @@
       <Image url="@../../../Image/chat_bot.png"/>
    </ImageView>
    <Label layoutX="21.0" layoutY="232.0" prefWidth="300.0" styleClass="introduce_label"
-          text="Chatbot, còn được gọi là &quot;bot hội thoại&quot;, là một chương trình trí tuệ nhân tạo được thiết kế để tương tác với người dùng qua văn bản hoặc giọng nói. Chatbots có khả năng hiểu và phản hồi các câu hỏi của người dùng, cung cấp thông tin, hỗ trợ hoặc thực hiện các nhiệm vụ cụ thể. Chatbots giúp người dùng dễ dàng tìm kiếm thông tin bằng cách tự động trả lời các câu hỏi và yêu cầu mà không cần sự can thiệp của con người hoặc tìm kiếm thủ công."
+          text="A chatbot, also known as a &quot;conversational bot&quot;, is an artificial intelligence program designed to interact with users through text or voice. Chatbots have the ability to understand and respond to users' questions, provide information, support, or perform specific tasks. Chatbots help users easily search for information by automatically answering questions and requests without human intervention or manual searching."
           wrapText="true">
       <font>
          <Font name="Arial Bold" size="18.0"/>

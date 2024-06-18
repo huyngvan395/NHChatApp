@@ -56,7 +56,9 @@ public class MessageChatSingleBoxController implements Initializable, MessageLis
             setGUIChat();
             loadHistoryMessage();
         }
-        scrollToBottom();
+        content_chat.heightProperty().addListener(((observable, oldValue, newValue) ->{
+            scrollToBottom();
+        }));
         Model.getInstance().targetClientObjectProperty().addListener(((observable, oldValue, newValue) ->{
             if(newValue!=null){
                 setGUIChat();
@@ -70,7 +72,7 @@ public class MessageChatSingleBoxController implements Initializable, MessageLis
     }
 
     private void setImage_avatar(String imageSend){
-        Image image=new Image(Objects.requireNonNull(getClass().getResourceAsStream(imageSend)));
+        Image image=new Image(imageSend);
         this.image_avatar.setImage(image);
     }
 
@@ -96,8 +98,6 @@ public class MessageChatSingleBoxController implements Initializable, MessageLis
             content_chat.getChildren().add(messageContain);
             Model.getInstance().getSocketClient().sendMessage("single-message/"+Enter_message.getText().replace("\n", "<newline>")+"/"+Model.getInstance().targetClientObjectProperty().get().getClientID()+"/"+ localDateTime);
             Enter_message.clear();
-            content_chat.requestLayout();
-            Platform.runLater(()->scrollToBottom());
         }
     }
 
@@ -131,8 +131,6 @@ public class MessageChatSingleBoxController implements Initializable, MessageLis
             AnchorPane imageContain= Model.getInstance().getViewFactory().getImageSend(timeShow, localFile.toURI().toString());
             content_chat.getChildren().addAll(imageContain);
             Model.getInstance().getSocketClient().sendMessage("single-image|"+base64Image+"|"+localFile.getName()+"|"+ localFile.toURI()+"|"+Model.getInstance().targetClientObjectProperty().get().getClientID()+"|"+localDateTime);
-            content_chat.requestLayout();
-            Platform.runLater(()->scrollToBottom());
         }
     }
 
@@ -163,8 +161,6 @@ public class MessageChatSingleBoxController implements Initializable, MessageLis
             AnchorPane fileContain= Model.getInstance().getViewFactory().getFileSend(timeShow, localFile.getName());
             content_chat.getChildren().addAll(fileContain);
             Model.getInstance().getSocketClient().sendMessage("single-file|"+base64File+"|"+localFile.getName()+"|"+localFile.toURI()+"|"+Model.getInstance().targetClientObjectProperty().get().getClientID()+"|"+localDateTime);
-            content_chat.requestLayout();
-            Platform.runLater(()->scrollToBottom());
         }
     }
 
@@ -189,8 +185,6 @@ public class MessageChatSingleBoxController implements Initializable, MessageLis
                         String timeShow=DateTimeFormatMessage.formatDateTime(localDateTime);
                         AnchorPane messagePane=Model.getInstance().getViewFactory().getMessageSingleReceive(messageParts[2].replace("<newline>", "\n"),timeShow);
                         content_chat.getChildren().add(messagePane);
-                        content_chat.requestLayout();
-                        Platform.runLater(()->scrollToBottom());
                     }
                 }else if(message.startsWith("single-image")){
                     if(currentClientID.equals(messageParts1[1]) && targetClientID.equals(messageParts1[5])){
@@ -212,8 +206,6 @@ public class MessageChatSingleBoxController implements Initializable, MessageLis
                         String timeShow=DateTimeFormatMessage.formatDateTime(localDateTime);
                         AnchorPane imagePane=Model.getInstance().getViewFactory().getImageSingleReceive(imageFile.toURI().toString(),timeShow);
                         content_chat.getChildren().addAll(imagePane);
-                        content_chat.requestLayout();
-                        Platform.runLater(()->scrollToBottom());
                     }
                 }else if(message.startsWith("single-file")){
                     if(currentClientID.equals(messageParts1[1]) && targetClientID.equals(messageParts1[5])){
@@ -235,11 +227,10 @@ public class MessageChatSingleBoxController implements Initializable, MessageLis
                         String timeShow=DateTimeFormatMessage.formatDateTime(localDateTime);
                         AnchorPane filePane=Model.getInstance().getViewFactory().getFileSingleReceive(file.getName(),timeShow);
                         content_chat.getChildren().addAll(filePane);
-                        content_chat.requestLayout();
-                        Platform.runLater(()->scrollToBottom());
                     }
                 }else if(message.startsWith("loadHistorySingle")){
                     content_chat.getChildren().clear();
+                    content_chat.requestLayout();
                     if(Model.getInstance().getMessageListSingle()!=null){
                         List<Message> listMessage=Model.getInstance().getMessageListSingle();
                         for(Message messageOb: listMessage){
@@ -274,8 +265,6 @@ public class MessageChatSingleBoxController implements Initializable, MessageLis
                                     AnchorPane filePane=Model.getInstance().getViewFactory().getFileSingleReceive(fileName ,timeShow);
                                     content_chat.getChildren().add(filePane);
                                 }
-                                content_chat.requestLayout();
-                                Platform.runLater(()->scrollToBottom());
                             });
                         }
                     }
@@ -285,14 +274,16 @@ public class MessageChatSingleBoxController implements Initializable, MessageLis
     }
 
     private void scrollToBottom(){
-        scrollPane.setVvalue(1.0);
+        Platform.runLater(() -> {
+            content_chat.layout();
+            scrollPane.setVvalue(1.0);
+        });
     }
 
     public void loadHistoryMessage(){
         if(Model.getInstance().targetClientObjectProperty().get()!=null){
-            String currentClientID=Model.getInstance().getCurrentClient().getClientID();
             String targetClientID=Model.getInstance().targetClientObjectProperty().get().getClientID();
-            Model.getInstance().getSocketClient().sendMessage("load_history_single/"+currentClientID+"/"+targetClientID);
+            Model.getInstance().getSocketClient().sendMessage("load_history_single/"+targetClientID);
         }
     }
 }

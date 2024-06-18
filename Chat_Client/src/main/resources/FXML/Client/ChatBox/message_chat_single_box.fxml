@@ -13,11 +13,11 @@
 <?import javafx.scene.text.Font?>
 <?import org.kordamp.ikonli.javafx.FontIcon?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="650.0" prefWidth="600.0" stylesheets="@../../CSS/Client/Message/message_chat_box.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.chat_client.Controller.Client.ChatBox.MessageChatSingleBoxController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="650.0" prefWidth="600.0" stylesheets="@../../../CSS/Client/Message/message_chat_box.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.chat_client.Controller.Client.ChatBox.MessageChatSingleBoxController">
    <top>
       <AnchorPane prefHeight="70.0" prefWidth="600.0" styleClass="header" BorderPane.alignment="CENTER">
          <ImageView fx:id="image_avatar" fitHeight="50.0" fitWidth="50.0" layoutX="14.0" layoutY="10.0" pickOnBounds="true">
-            <Image url="@../../Image/userchatdefault.png" />
+            <Image url="@../../../Image/userchatdefault.png" />
             <clip>
                <Circle centerX="25" centerY="25" radius="24" />
             </clip>

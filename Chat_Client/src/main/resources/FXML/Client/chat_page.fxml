@@ -12,6 +12,6 @@
       <fx:include source="Menu/menu_chat_single.fxml"/>
    </center>
    <right>
-      <fx:include source="initial_chat_single_box.fxml"/>
+      <fx:include source="ChatBox/initial_chat_single_box.fxml"/>
    </right>
 </BorderPane>
