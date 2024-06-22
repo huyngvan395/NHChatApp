@@ -113,14 +113,13 @@ public class AccountDAO {
         return false;
     }
 
-    public void updateInfo(String clientID, String name, LocalDate birthdate, String email){
+    public void updateInfo(String clientID, String name, String email){
         PreparedStatement ps;
         try{
-            ps=con.prepareStatement("update client set Name=?,BirthDate=?,Email=? where ClientID=?");
+            ps=con.prepareStatement("update client set Name=?,Email=? where ClientID=?");
             ps.setString(1,name);
-            ps.setDate(2,Date.valueOf(birthdate));
-            ps.setString(3,email);
-            ps.setString(4,clientID);
+            ps.setString(2,email);
+            ps.setString(3,clientID);
             ps.executeUpdate();
         }catch(SQLException e){
             e.printStackTrace();

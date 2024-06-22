@@ -287,9 +287,8 @@ public class ClientThreadHandle implements Runnable{
     public void handleUpdateInfo(String[] messageParts) throws IOException{
         String SenderID= messageParts[1];
         String name=messageParts[2];
-        LocalDate date=LocalDate.parse(messageParts[3]);
-        String email=messageParts[4];
-        Model.getInstance().getAccountDAO().updateInfo(SenderID, name, date, email);
+        String email=messageParts[3];
+        Model.getInstance().getAccountDAO().updateInfo(SenderID, name, email);
     }
 
     public void handleChatBotMessage(String[] messageParts) throws IOException{

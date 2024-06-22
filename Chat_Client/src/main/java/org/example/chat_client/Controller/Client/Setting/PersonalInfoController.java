@@ -2,6 +2,7 @@ package org.example.chat_client.Controller.Client.Setting;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import org.example.chat_client.Model.Model;
@@ -24,6 +25,24 @@ public class PersonalInfoController implements Initializable {
         setID();
         setName();
         setEmail();
+        update_button.setOnAction(event -> update());
+    }
+
+    public void update(){
+        if(!Name.getText().isEmpty() || !Email.getText().isEmpty()){
+            Model.getInstance().getSocketClient().sendMessage("update-info/"+ID.getText()+"/"+Name.getText()+"/"+Email.getText());
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Update Info");
+            alert.setHeaderText(null);
+            alert.setContentText("Update Information Successfully");
+            alert.showAndWait();
+        }else{
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Update Info");
+            alert.setHeaderText(null);
+            alert.setContentText("Error Updating Info");
+            alert.showAndWait();
+        }
     }
 
     public void setID() {

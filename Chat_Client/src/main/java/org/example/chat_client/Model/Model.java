@@ -114,7 +114,7 @@ public class Model {
                 String message= null;
                 try {
                     message = messageResponseQueue.take();
-                    if (message != null && !message.trim().isEmpty()) {
+                    if (!message.trim().isEmpty()) {
                         this.messageHandler.handleMessage(message);
                     }
                 } catch (InterruptedException e) {
