@@ -6,6 +6,7 @@ import javafx.scene.control.*;
 import javafx.stage.Stage;
 import org.example.chat_client.Model.Client;
 import org.example.chat_client.Model.Model;
+import org.example.chat_client.Ultilities.Security;
 import org.example.chat_client.View.LoginOptions;
 
 import java.net.URL;
@@ -37,7 +38,7 @@ public class LoginController implements Initializable {
 
     public void Login(){
         String emailValue = email.getText();
-        String passValue = password.isVisible()? password.getText(): password_shown.getText();
+        String passValue = password.isVisible()? Security.enCode(password.getText()) : Security.enCode(password_shown.getText());
         if(emailValue.isEmpty() || passValue.isEmpty()){
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Error");
@@ -50,7 +51,7 @@ public class LoginController implements Initializable {
             String response=Model.getInstance().getSocketClient().receiveResponse();
             System.out.println(response+"\n");
             if(response.endsWith("success")){
-                String[] messageParts=response.split("/");
+//                String[] messageParts=response.split("/");
                 String[] messageParts1=response.split("\\|");
                 Client client =new Client(messageParts1[1], messageParts1[2], messageParts1[3], messageParts1[4]);
                 Model.getInstance().setCurrentClient(client);

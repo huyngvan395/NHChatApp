@@ -13,6 +13,8 @@ import java.util.ResourceBundle;
 
 public class ForgotPassController implements Initializable {
     @FXML
+    private Button return_Login;
+    @FXML
     private TextField email;
     @FXML
     private Button send_code_btn;
@@ -20,6 +22,7 @@ public class ForgotPassController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         send_code_btn.setOnAction(event -> sendCode());
+        return_Login.setOnAction(event -> return_Login());
     }
 
     public void sendCode() {
@@ -45,6 +48,10 @@ public class ForgotPassController implements Initializable {
             alert.setContentText("Please enter email field");
             alert.showAndWait();
         }
+    }
+
+    public void return_Login(){
+        Model.getInstance().getViewFactory().getLoginOptions().set(LoginOptions.Login);
     }
 
 

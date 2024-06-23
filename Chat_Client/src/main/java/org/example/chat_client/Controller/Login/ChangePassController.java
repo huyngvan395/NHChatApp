@@ -5,12 +5,15 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import org.example.chat_client.Model.Model;
 import org.example.chat_client.Model.ShowPass;
+import org.example.chat_client.Ultilities.Security;
 import org.example.chat_client.View.LoginOptions;
 
 import java.net.URL;
 import java.util.ResourceBundle;
 
 public class ChangePassController implements Initializable {
+    @FXML
+    private Button return_Verification;
     @FXML
     private CheckBox show_pass;
     @FXML
@@ -30,6 +33,7 @@ public class ChangePassController implements Initializable {
         confirm_pass_shown.setVisible(false);
         show_pass.setOnAction(e-> showPass());
         submit_btn.setOnAction(e->SubmitChangePass());
+        return_Verification.setOnAction(e->return_Verification());
     }
 
     public void showPass(){
@@ -46,7 +50,7 @@ public class ChangePassController implements Initializable {
 
     private void checkConfirmPass(TextField password, TextField confirmPass) {
         if(password.getText().equals(confirmPass.getText())){
-            String message=password.getText();
+            String message= Security.enCode(password.getText());
             Model.getInstance().getSocketClient().sendMessage(message);
             Model.getInstance().getViewFactory().getLoginOptions().set(LoginOptions.Login);
         }else{
@@ -56,6 +60,10 @@ public class ChangePassController implements Initializable {
             alert.setContentText("Confirmation password is incorrect");
             alert.showAndWait();
         }
+    }
+
+    public void return_Verification(){
+        Model.getInstance().getViewFactory().getLoginOptions().set(LoginOptions.ReturnVerification);
     }
 
 }

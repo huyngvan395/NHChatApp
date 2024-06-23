@@ -8,6 +8,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import org.example.chat_client.Model.Model;
 import org.example.chat_client.Model.ShowPass;
+import org.example.chat_client.Ultilities.Security;
 import org.example.chat_client.View.LoginOptions;
 
 import java.io.File;
@@ -71,7 +72,7 @@ public class SignupController implements Initializable {
         }else{
             String ID_value=ID.getText();
             String name_value=name.getText();
-            String password_value=password.isVisible()? password.getText() : password_shown.getText();
+            String password_value=password.isVisible()? Security.enCode(password.getText()) : Security.enCode(password_shown.getText());
             String email_value=email.getText();
             saveAvatar(this.imageFile);
             String message="signup|"+ID_value+"|"+name_value+"|"+email_value+"|"+password_value+"|"+base64ImageAvatar+"|"+avatarName+"|"+pathAvatar;

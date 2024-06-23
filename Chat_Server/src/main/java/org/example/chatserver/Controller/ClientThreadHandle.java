@@ -7,7 +7,6 @@ import org.example.chatserver.Model.Group;
 import org.example.chatserver.Model.Message;
 import org.example.chatserver.Model.Model;
 import org.example.chatserver.Utilities.ChatBotAPI;
-import org.example.chatserver.Utilities.Security;
 
 import java.io.*;
 import java.net.Socket;
@@ -147,8 +146,7 @@ public class ClientThreadHandle implements Runnable{
                 if(messageSubmitCode.equals(code)){
                     writeMessage("change-pass");
                     String messageChangePass=inText.readLine();
-                    String encodeChangePass=Security.enCode(messageChangePass);
-                    Model.getInstance().getAccountDAO().updatePassViaEmail(email, encodeChangePass);
+                    Model.getInstance().getAccountDAO().updatePassViaEmail(email, messageChangePass);
                     checkcode=true;
                 }else{
                     writeMessage("code-wrong");
@@ -163,9 +161,8 @@ public class ClientThreadHandle implements Runnable{
     public void handleLogin(String[] messageParts) throws IOException, SQLException {
         String email = messageParts[1];
         String password = messageParts[2];
-        String encodePass=Security.enCode(password);
 
-        if (Model.getInstance().getAccountDAO().Login(email, encodePass)) {
+        if (Model.getInstance().getAccountDAO().Login(email, password)) {
             ResultSet rs=Model.getInstance().getAccountDAO().getClientInfo(email);
             String name="";
             String image="";
@@ -199,7 +196,6 @@ public class ClientThreadHandle implements Runnable{
         String name= messageParts[2];
         String email= messageParts[3];
         String password= messageParts[4];
-        String encodePass= Security.enCode(password);
         String image= messageParts[7];
         File localDir=new File(directoryImageAvatar);
         if(!localDir.exists()){
@@ -212,7 +208,7 @@ public class ClientThreadHandle implements Runnable{
         }catch(IOException e){
             e.printStackTrace();
         }
-        Model.getInstance().getAccountDAO().addClient(ID, name, email, encodePass, image);
+        Model.getInstance().getAccountDAO().addClient(ID, name, email, password, image);
         this.writeMessage("signup/" + ID + "/success");
         Model.getInstance().getClientThreadManager().setListClient(this);
     }
@@ -280,8 +276,7 @@ public class ClientThreadHandle implements Runnable{
     public void handleChangePass(String[] messageParts){
         String SenderID= messageParts[2];
         String password= messageParts[3];
-        String encodePass= Security.enCode(password);
-        Model.getInstance().getAccountDAO().updatePassViaClientID(SenderID, encodePass);
+        Model.getInstance().getAccountDAO().updatePassViaClientID(SenderID, password);
     }
 
     public void handleUpdateInfo(String[] messageParts) throws IOException{

@@ -15,11 +15,7 @@ public class App extends Application {
 
     @Override
     public void start(Stage primaryStage) throws IOException {
-        new Thread(()->{
-            Platform.runLater(()->{
-                Model.getInstance().getViewFactory().showLoginPage();
-            });
-        }).start();
+        Model.getInstance().getViewFactory().showLoginPage();
     }
 
     public void stop() throws Exception {

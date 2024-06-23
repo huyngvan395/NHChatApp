@@ -60,3 +60,13 @@
 .avatar-set:hover{
     -fx-cursor: hand;
 }
+.back-btn{
+    -fx-background-color: transparent;
+}
+.back-btn FontIcon{
+    -fx-fill: #8E5DF1;
+}
+.back-btn:hover{
+    -fx-background-color: rgba(0,0,0,0.1);
+    -fx-cursor: hand;
+}

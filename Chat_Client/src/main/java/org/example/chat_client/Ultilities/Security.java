@@ -1,4 +1,4 @@
-package org.example.chatserver.Utilities;
+package org.example.chat_client.Ultilities;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;

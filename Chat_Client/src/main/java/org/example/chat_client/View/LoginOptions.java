@@ -5,5 +5,7 @@ public enum LoginOptions {
     Login,
     ForgotPassword,
     Verification,
-    ChangePassword
+    ChangePassword,
+    ReturnVerification,
+    ReturnForgotPassword
 }

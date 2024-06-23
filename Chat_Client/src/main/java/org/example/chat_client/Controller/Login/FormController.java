@@ -18,8 +18,8 @@ public class FormController implements Initializable {
             switch (newValue) {
                 case Login -> form_page.setCenter(Model.getInstance().getViewFactory().getLogin());
                 case Signup -> form_page.setCenter(Model.getInstance().getViewFactory().getSignup());
-                case ForgotPassword -> form_page.setCenter(Model.getInstance().getViewFactory().getForgotPass());
-                case Verification -> form_page.setCenter(Model.getInstance().getViewFactory().getVerification());
+                case ForgotPassword,ReturnForgotPassword -> form_page.setCenter(Model.getInstance().getViewFactory().getForgotPass());
+                case Verification,ReturnVerification -> form_page.setCenter(Model.getInstance().getViewFactory().getVerification());
                 case ChangePassword -> form_page.setCenter(Model.getInstance().getViewFactory().getChangePass());
             }
         });

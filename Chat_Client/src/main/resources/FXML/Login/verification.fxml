@@ -9,6 +9,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
+<?import org.kordamp.ikonli.javafx.FontIcon?>
 <AnchorPane prefHeight="600.0" prefWidth="800.0" stylesheets="@../../CSS/Login/form.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.chat_client.Controller.Login.VerificationController">
     <ImageView fitHeight="600.0" fitWidth="800.0" pickOnBounds="true" preserveRatio="true">
         <Image url="@../../Image/bg_appchat.png" />
@@ -72,5 +73,10 @@
             <Font size="16.0" />
          </font>
       </Hyperlink>
+        <Button fx:id="return_ForgetPassPage" layoutX="14.0" layoutY="14.0" mnemonicParsing="false" styleClass="back-btn">
+            <graphic>
+                <FontIcon iconLiteral="fa-arrow-left" iconSize="20" />
+            </graphic>
+        </Button>
     </AnchorPane>
 </AnchorPane>

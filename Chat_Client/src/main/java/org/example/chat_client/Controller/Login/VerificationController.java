@@ -15,6 +15,8 @@ import java.util.ResourceBundle;
 
 public class VerificationController implements Initializable {
     @FXML
+    private Button return_ForgetPassPage;
+    @FXML
     private Hyperlink resend_code;
     @FXML
     private Button submit_btn;
@@ -39,6 +41,7 @@ public class VerificationController implements Initializable {
         setupTextField(c4,c5);
         setupTextField(c5,c6);
         submit_btn.setOnAction(e-> checkVerificationCode());
+        return_ForgetPassPage.setOnAction(e->returnForgetPassPage());
     }
 
     public void setupTextField(TextField current, TextField next){
@@ -79,6 +82,10 @@ public class VerificationController implements Initializable {
         c6.setText("");
         // Set focus vào TextField đầu tiên sau khi reset
         c1.requestFocus();
+    }
+
+    public void returnForgetPassPage() {
+        Model.getInstance().getViewFactory().getLoginOptions().set(LoginOptions.ReturnForgotPassword);
     }
 
 }

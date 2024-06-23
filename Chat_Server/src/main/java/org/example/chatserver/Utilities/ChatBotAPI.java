@@ -17,7 +17,6 @@ public class ChatBotAPI {
     public static String sendMessageToAPI(String message) {
         Dotenv dotenv = Dotenv.load();
         String apiKey = dotenv.get("API_Key");
-        // Tạo yêu cầu API với tin nhắn được truyền vào
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("https://chatgpt-42.p.rapidapi.com/geminipro"))
                 .header("x-rapidapi-key", apiKey)
@@ -26,16 +25,13 @@ public class ChatBotAPI {
                 .method("POST", HttpRequest.BodyPublishers.ofString("{\"messages\":[{\"role\":\"user\",\"content\":\""+message+"\"}],\"temperature\":0.9,\"top_k\":5,\"top_p\":0.9,\"max_tokens\":256,\"web_access\":false}"))
                 .build();
 
-        // Gửi yêu cầu và nhận phản hồi từ API
         HttpResponse<String> response = null;
         try {
             response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
         } catch (IOException |InterruptedException e) {
             e.printStackTrace();
         }
-//         in ra chuỗi phản hồi json
         System.out.println(response.body());
-//        phân tích chuỗi và lấy phần content
         return getMessageFromChatGPTResponse(response.body());
     }
 
