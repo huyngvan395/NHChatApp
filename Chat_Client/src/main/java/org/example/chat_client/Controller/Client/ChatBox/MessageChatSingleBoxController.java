@@ -166,7 +166,12 @@ public class MessageChatSingleBoxController implements Initializable, MessageLis
 
     @Override
     public void onMessageReceived(String message) {
-        String currentClientID=Model.getInstance().getCurrentClient().getClientID();
+        String currentClientID;
+        if(Model.getInstance().getCurrentClient().getClientID()!=null){
+            currentClientID=Model.getInstance().getCurrentClient().getClientID();
+        }else{
+            currentClientID=null;
+        }
         String targetClientID;
         if(Model.getInstance().targetClientObjectProperty().get()!=null){
             targetClientID=Model.getInstance().targetClientObjectProperty().get().getClientID();
@@ -174,7 +179,7 @@ public class MessageChatSingleBoxController implements Initializable, MessageLis
             targetClientID = null;
         }
         System.out.println(message+"chat-single");
-        if(targetClientID!=null){
+        if(targetClientID!=null  && currentClientID!=null){
             Platform.runLater(()->{
                 String[] messageParts=message.split("/");
                 String[] messageParts1=message.split("\\|");
