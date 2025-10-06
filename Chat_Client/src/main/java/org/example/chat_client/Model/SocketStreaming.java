@@ -88,14 +88,12 @@ public class SocketStreaming {
                 byte[] data = out.toByteArray();
                 out.close();
                 if (data.length > 60000) {
-                    // Simple fragmentation (split into chunks) - optional
                     int max = 60000;
                     int parts = (data.length + max - 1) / max;
                     int offset = 0;
                     for (int p = 0; p < parts; p++) {
                         int len = Math.min(max, data.length - offset);
                         byte[] chunk = new byte[len + 4];
-                        // Put part index in first 4 bytes (simple)
                         chunk[0] = (byte) ((p >> 24) & 0xFF);
                         chunk[1] = (byte) ((p >> 16) & 0xFF);
                         chunk[2] = (byte) ((p >> 8) & 0xFF);
@@ -148,7 +146,6 @@ public class SocketStreaming {
                 try {
                     videoReceiveSocket.receive(packet);
 
-                    // Try read image directly; if fragmented, ideal solution is reassembly (not fully implemented here)
                     byte[] imgBytes = new byte[packet.getLength()];
                     System.arraycopy(packet.getData(), packet.getOffset(), imgBytes, 0, packet.getLength());
                     ByteArrayInputStream bais = new ByteArrayInputStream(imgBytes);
@@ -255,7 +252,6 @@ public class SocketStreaming {
         } catch (SocketException se) {
             if (running) {
                 System.err.println("Lỗi bind audio socket (port " + AUDIO_PORT + " có thể đang dùng): " + se.getMessage());
-                // Gợi ý: Thử port khác nếu cần, hoặc chờ 5-10s trước khi retry
             }
         } catch (Exception e) {
             System.err.println("Lỗi receive audio: " + e.getMessage());
@@ -317,7 +313,6 @@ public class SocketStreaming {
         if (receiveVideoThread != null) receiveVideoThread.interrupt();
         if (receiveAudioThread != null) receiveAudioThread.interrupt();
 
-        // Đợi một chút để threads thoát (optional, max 2s)
         try {
             Thread.sleep(2000);
         } catch (InterruptedException ignored) {}
