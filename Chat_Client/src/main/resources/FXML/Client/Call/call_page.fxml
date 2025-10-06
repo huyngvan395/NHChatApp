@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" stylesheets="@../../../CSS/Client/call_page.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.chat_client.Controller.Client.Call.CallPageController">
+   <ImageView fx:id="remoteView" fitHeight="600.0" fitWidth="800.0" pickOnBounds="true" preserveRatio="true" />
+   <ImageView fx:id="localView" fitHeight="200.0" fitWidth="300.0" pickOnBounds="true" preserveRatio="true" x="500.0" />
+   <Button fx:id="end_call_button" layoutX="376.0" layoutY="513.0" mnemonicParsing="false" styleClass="refuse_button">
+      <graphic>
+         <FontIcon iconLiteral="fa-phone" iconSize="40" />
+      </graphic>
+   </Button>
+   <ImageView fx:id="img_ava" fitHeight="50.0" fitWidth="50.0" layoutX="14.0" layoutY="14.0" pickOnBounds="true">
+      <Image url="@../../../Image/userchatdefault.png" />
+      <clip>
+         <Circle centerX="25" centerY="25" radius="24" />
+      </clip>
+   </ImageView>
+   <Text fx:id="user_name" layoutX="78.0" layoutY="45.0" strokeType="OUTSIDE" strokeWidth="0.0" text="user name">
+      <font>
+         <Font name="Arial Bold" size="18.0" />
+      </font>
+   </Text>
+</AnchorPane>

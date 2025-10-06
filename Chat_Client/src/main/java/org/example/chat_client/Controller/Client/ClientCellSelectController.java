@@ -24,7 +24,7 @@ public class ClientCellSelectController implements Initializable {
     }
 
     public void setImage_avatar(String imageClient){
-        Image image=new Image(imageClient);
+        Image image=new Image(imageClient,true);
         image_avatar.setImage(image);
     }
 

@@ -1,0 +1,41 @@
+.refuse_button {
+    -fx-background-color: #ffc8c8;
+    -fx-border-width: 0;
+    -fx-padding: 8px;
+    -fx-cursor: hand;
+    -fx-border-radius: 10px;
+    -fx-background-radius: 10px;
+}
+
+.refuse_button FontIcon {
+    -fx-fill: red;
+}
+
+.refuse_button:hover {
+    -fx-background-color: rgba(255, 0, 0, 0.1);
+}
+
+.refuse_button:hover FontIcon {
+    -fx-fill: darkred;
+}
+
+.receive_button {
+    -fx-background-color: #c0f1c0;
+    -fx-border-width: 0;
+    -fx-padding: 8px;
+    -fx-cursor: hand;
+    -fx-border-radius: 10px;
+    -fx-background-radius: 10px;
+}
+
+.receive_button FontIcon {
+    -fx-fill: green;
+}
+
+.receive_button:hover {
+    -fx-background-color: rgba(26, 255, 0, 0.1);
+}
+
+.receive_button:hover FontIcon {
+    -fx-fill: #198b00;
+}

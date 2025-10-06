@@ -90,7 +90,7 @@ public class MessageChatGroupBoxController implements Initializable, MessageList
             String timeShow= DateTimeFormatMessage.formatDateTime(localDateTime);
             AnchorPane messageContain= Model.getInstance().getViewFactory().getMessageSend(Enter_message.getText(), timeShow);
             content_chat.getChildren().add(messageContain);
-            Model.getInstance().getSocketClient().sendMessage("group-message/"+Enter_message.getText().replace("\n", "<newline>")+"/"+Model.getInstance().targetGroupObjectProperty().get().getGroupID()+"/"+ localDateTime);
+            Model.getInstance().getSocketClient().sendMessage("group-message|"+Enter_message.getText().replace("\n", "<newline>")+"|"+Model.getInstance().targetGroupObjectProperty().get().getGroupID()+"|"+ localDateTime);
             Enter_message.clear();
         }
     }
@@ -170,8 +170,8 @@ public class MessageChatGroupBoxController implements Initializable, MessageList
         System.out.println(message+"chat-single");
         if(targetGroupID!=null){
             Platform.runLater(()->{
-                String[] messageParts=message.split("/");
-                String[] messageParts1=message.split("\\|");
+//                String[] messageParts=message.split("/");
+                String[] messageParts=message.split("\\|");
                 if(message.startsWith("group-message")){
                     if(targetGroupID.equals(messageParts[1])){
                         System.out.println("Đã gửi tới");
@@ -187,10 +187,10 @@ public class MessageChatGroupBoxController implements Initializable, MessageList
                         content_chat.getChildren().add(messagePane);
                     }
                 }else if(message.startsWith("group-image")){
-                    if(targetGroupID.equals(messageParts1[1])){
+                    if(targetGroupID.equals(messageParts[1])){
                         System.out.println("Receive success");
-                        String base64Image=messageParts1[2];
-                        String nameImage=messageParts1[3];
+                        String base64Image=messageParts[2];
+                        String nameImage=messageParts[3];
                         byte[] imageBytes = Base64.getDecoder().decode(base64Image);
                         File localDir=new File(directoryImage);
                         if(!localDir.exists()){
@@ -208,16 +208,16 @@ public class MessageChatGroupBoxController implements Initializable, MessageList
                                 clientSend=client;
                             }
                         }
-                        LocalDateTime localDateTime=LocalDateTime.parse(messageParts1[4]);
+                        LocalDateTime localDateTime=LocalDateTime.parse(messageParts[4]);
                         String timeShow=DateTimeFormatMessage.formatDateTime(localDateTime);
                         AnchorPane imagePane=Model.getInstance().getViewFactory().getImageGroupReceive(clientSend.getName(),imageFile.toURI().toString(),timeShow, clientSend.getImage());
                         content_chat.getChildren().addAll(imagePane);
                     }
                 }else if(message.startsWith("group-file")){
-                    if(targetGroupID.equals(messageParts1[1])){
+                    if(targetGroupID.equals(messageParts[1])){
                         System.out.println("Receive success");
-                        String base64File=messageParts1[2];
-                        String nameFile=messageParts1[3];
+                        String base64File=messageParts[2];
+                        String nameFile=messageParts[3];
                         byte[] fileBytes = Base64.getDecoder().decode(base64File);
                         File localDir=new File(directoryFile);
                         if(!localDir.exists()){
@@ -235,7 +235,7 @@ public class MessageChatGroupBoxController implements Initializable, MessageList
                                 clientSend=client;
                             }
                         }
-                        LocalDateTime localDateTime=LocalDateTime.parse(messageParts1[4]);
+                        LocalDateTime localDateTime=LocalDateTime.parse(messageParts[4]);
                         String timeShow=DateTimeFormatMessage.formatDateTime(localDateTime);
                         AnchorPane filePane=Model.getInstance().getViewFactory().getFileGroupReceive(clientSend.getName(),file.getName(),timeShow, clientSend.getImage());
                         content_chat.getChildren().addAll(filePane);
@@ -243,7 +243,7 @@ public class MessageChatGroupBoxController implements Initializable, MessageList
                 }else if(message.startsWith("loadHistoryGroup")){
                     content_chat.getChildren().clear();
                     content_chat.requestLayout();
-                    String IDGroup=messageParts1[2];
+                    String IDGroup=messageParts[2];
                     if(Model.getInstance().getMessageListGroup()!=null){
                         List<Message> listMessage=Model.getInstance().getMessageListGroup();
                         for(Message messageOb: listMessage){
@@ -281,7 +281,7 @@ public class MessageChatGroupBoxController implements Initializable, MessageList
                                     content_chat.getChildren().add(imagePane);
                                 }else if(messageOb.getMessageType().equals("File") && messageOb.getSenderID().equals(currentClientID) && Model.getInstance().targetGroupObjectProperty().get().getGroupID().equals(IDGroup)){
                                     String timeShow=DateTimeFormatMessage.formatDateTime(LocalDateTime.parse(messageOb.getTimeSend()));
-                                    int lastSlashIndex=messageOb.getMessage().lastIndexOf("/");
+                                    int lastSlashIndex=messageOb.getMessage().lastIndexOf("|");
                                     String fileName=messageOb.getMessage().substring(lastSlashIndex+1);
                                     AnchorPane filePane=Model.getInstance().getViewFactory().getFileSend(timeShow,fileName);
                                     content_chat.getChildren().add(filePane);
@@ -294,7 +294,7 @@ public class MessageChatGroupBoxController implements Initializable, MessageList
                                         }
                                     }
                                     String timeShow=DateTimeFormatMessage.formatDateTime(LocalDateTime.parse(messageOb.getTimeSend()));
-                                    int lastSlashIndex=messageOb.getMessage().lastIndexOf("/");
+                                    int lastSlashIndex=messageOb.getMessage().lastIndexOf("|");
                                     String fileName=messageOb.getMessage().substring(lastSlashIndex+1);
                                     AnchorPane filePane=Model.getInstance().getViewFactory().getFileGroupReceive(Sender.getName(),fileName,timeShow,Sender.getImage());
                                     content_chat.getChildren().add(filePane);
@@ -310,7 +310,7 @@ public class MessageChatGroupBoxController implements Initializable, MessageList
     public void loadHistoryMessage(){
         if(Model.getInstance().targetGroupObjectProperty().get()!=null){
             String IDGroup=Model.getInstance().targetGroupObjectProperty().get().getGroupID();
-            Model.getInstance().getSocketClient().sendMessage("load_history_group/"+IDGroup);
+            Model.getInstance().getSocketClient().sendMessage("load_history_group|"+IDGroup);
         }
     }
 

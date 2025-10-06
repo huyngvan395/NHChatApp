@@ -9,7 +9,9 @@ import org.example.chat_client.Model.Model;
 import org.example.chat_client.Ultilities.Security;
 import org.example.chat_client.View.LoginOptions;
 
+import java.net.InetAddress;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.util.ResourceBundle;
 
 public class LoginController implements Initializable {
@@ -36,7 +38,7 @@ public class LoginController implements Initializable {
         login_btn.setOnAction(event -> Login());
     }
 
-    public void Login(){
+    public void Login() {
         String emailValue = email.getText();
         String passValue = password.isVisible()? Security.enCode(password.getText()) : Security.enCode(password_shown.getText());
         if(emailValue.isEmpty() || passValue.isEmpty()){
@@ -46,7 +48,13 @@ public class LoginController implements Initializable {
             alert.setContentText("Please fill all the fields");
             alert.showAndWait();
         }else{
-            String message="login/"+emailValue+"/"+passValue;
+            String host = "";
+            try{
+                host = InetAddress.getLocalHost().getHostAddress();
+            }catch (UnknownHostException e){
+                e.printStackTrace();
+            }
+            String message="login|"+emailValue+"|"+passValue+"|"+ host;
             Model.getInstance().getSocketClient().sendMessage(message);
             String response=Model.getInstance().getSocketClient().receiveResponse();
             System.out.println(response+"\n");

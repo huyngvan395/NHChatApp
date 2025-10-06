@@ -12,10 +12,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
-import org.example.chat_client.Model.DateTimeFormatMessage;
-import org.example.chat_client.Model.Message;
-import org.example.chat_client.Model.MessageListener;
-import org.example.chat_client.Model.Model;
+import org.example.chat_client.Model.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -29,6 +26,8 @@ import java.util.Objects;
 import java.util.ResourceBundle;
 
 public class MessageChatSingleBoxController implements Initializable, MessageListener {
+    @FXML
+    private Button call_button;
     @FXML
     private ScrollPane scrollPane;
     @FXML
@@ -68,11 +67,12 @@ public class MessageChatSingleBoxController implements Initializable, MessageLis
         sendMessage_btn.setOnAction(e->sendMessage());
         sendImage_btn.setOnAction(e->sendImage());
         sendFile_btn.setOnAction(e->sendFile());
+        call_button.setOnAction(e->call());
         Model.getInstance().getMessageHandler().addMessageListener(this);
     }
 
     private void setImage_avatar(String imageSend){
-        Image image=new Image(imageSend);
+        Image image=new Image(imageSend,true);
         this.image_avatar.setImage(image);
     }
 
@@ -96,7 +96,7 @@ public class MessageChatSingleBoxController implements Initializable, MessageLis
             String timeShow=DateTimeFormatMessage.formatDateTime(localDateTime);
             AnchorPane messageContain= Model.getInstance().getViewFactory().getMessageSend(Enter_message.getText(), timeShow);
             content_chat.getChildren().add(messageContain);
-            Model.getInstance().getSocketClient().sendMessage("single-message/"+Enter_message.getText().replace("\n", "<newline>")+"/"+Model.getInstance().targetClientObjectProperty().get().getClientID()+"/"+ localDateTime);
+            Model.getInstance().getSocketClient().sendMessage("single-message|"+Enter_message.getText().replace("\n", "<newline>")+"|"+Model.getInstance().targetClientObjectProperty().get().getClientID()+"|"+ localDateTime);
             Enter_message.clear();
         }
     }
@@ -181,8 +181,8 @@ public class MessageChatSingleBoxController implements Initializable, MessageLis
         System.out.println(message+"chat-single");
         if(targetClientID!=null  && currentClientID!=null){
             Platform.runLater(()->{
-                String[] messageParts=message.split("/");
-                String[] messageParts1=message.split("\\|");
+//                String[] messageParts=message.split("|");
+                String[] messageParts=message.split("\\|");
                 if(message.startsWith("single-message")){
                     if(currentClientID.equals(messageParts[1]) && targetClientID.equals(messageParts[4])){
                         System.out.println("Đã gửi tới");
@@ -192,10 +192,10 @@ public class MessageChatSingleBoxController implements Initializable, MessageLis
                         content_chat.getChildren().add(messagePane);
                     }
                 }else if(message.startsWith("single-image")){
-                    if(currentClientID.equals(messageParts1[1]) && targetClientID.equals(messageParts1[5])){
+                    if(currentClientID.equals(messageParts[1]) && targetClientID.equals(messageParts[5])){
                         System.out.println("Receive success");
-                        String base64Image=messageParts1[2];
-                        String nameImage=messageParts1[3];
+                        String base64Image=messageParts[2];
+                        String nameImage=messageParts[3];
                         byte[] imageBytes = Base64.getDecoder().decode(base64Image);
                         File localDir=new File(directoryImage);
                         if(!localDir.exists()){
@@ -207,16 +207,16 @@ public class MessageChatSingleBoxController implements Initializable, MessageLis
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
-                        LocalDateTime localDateTime=LocalDateTime.parse(messageParts1[4]);
+                        LocalDateTime localDateTime=LocalDateTime.parse(messageParts[4]);
                         String timeShow=DateTimeFormatMessage.formatDateTime(localDateTime);
                         AnchorPane imagePane=Model.getInstance().getViewFactory().getImageSingleReceive(imageFile.toURI().toString(),timeShow);
                         content_chat.getChildren().addAll(imagePane);
                     }
                 }else if(message.startsWith("single-file")){
-                    if(currentClientID.equals(messageParts1[1]) && targetClientID.equals(messageParts1[5])){
+                    if(currentClientID.equals(messageParts[1]) && targetClientID.equals(messageParts[5])){
                         System.out.println("Receive success");
-                        String base64File=messageParts1[2];
-                        String nameFile=messageParts1[3];
+                        String base64File=messageParts[2];
+                        String nameFile=messageParts[3];
                         byte[] fileBytes = Base64.getDecoder().decode(base64File);
                         File localDir=new File(directoryFile);
                         if(!localDir.exists()){
@@ -228,7 +228,7 @@ public class MessageChatSingleBoxController implements Initializable, MessageLis
                         }catch (IOException e){
                             e.printStackTrace();
                         }
-                        LocalDateTime localDateTime=LocalDateTime.parse(messageParts1[4]);
+                        LocalDateTime localDateTime=LocalDateTime.parse(messageParts[4]);
                         String timeShow=DateTimeFormatMessage.formatDateTime(localDateTime);
                         AnchorPane filePane=Model.getInstance().getViewFactory().getFileSingleReceive(file.getName(),timeShow);
                         content_chat.getChildren().addAll(filePane);
@@ -259,13 +259,13 @@ public class MessageChatSingleBoxController implements Initializable, MessageLis
                                     content_chat.getChildren().add(imagePane);
                                 }else if(messageOb.getMessageType().equals("File") && messageOb.getSenderID().equals(currentClientID)){
                                     String timeShow=DateTimeFormatMessage.formatDateTime(LocalDateTime.parse(messageOb.getTimeSend()));
-                                    int lastSlashIndex=messageOb.getMessage().lastIndexOf("/");
+                                    int lastSlashIndex=messageOb.getMessage().lastIndexOf("|");
                                     String fileName=messageOb.getMessage().substring(lastSlashIndex+1);
                                     AnchorPane filePane=Model.getInstance().getViewFactory().getFileSend(timeShow,fileName);
                                     content_chat.getChildren().add(filePane);
                                 }else if(messageOb.getMessageType().equals("File") && messageOb.getSenderID().equals(targetClientID)){
                                     String timeShow=DateTimeFormatMessage.formatDateTime(LocalDateTime.parse(messageOb.getTimeSend()));
-                                    int lastSlashIndex=messageOb.getMessage().lastIndexOf("/");
+                                    int lastSlashIndex=messageOb.getMessage().lastIndexOf("|");
                                     String fileName=messageOb.getMessage().substring(lastSlashIndex+1);
                                     AnchorPane filePane=Model.getInstance().getViewFactory().getFileSingleReceive(fileName ,timeShow);
                                     content_chat.getChildren().add(filePane);
@@ -278,6 +278,15 @@ public class MessageChatSingleBoxController implements Initializable, MessageLis
         }
     }
 
+    public void call(){
+        String receiverID = Model.getInstance().targetClientObjectProperty().get().getClientID();
+        Client currentClient = Model.getInstance().getCurrentClient();
+        Model.getInstance().getSocketClient().sendMessage("call-request|"+receiverID+"|"+currentClient.getName()+"|"+currentClient.getImage());
+        String receiverName = Model.getInstance().targetClientObjectProperty().get().getName();
+        String receiverImg = Model.getInstance().targetClientObjectProperty().get().getImage();
+        Model.getInstance().getViewFactory().showCallForm(Model.getInstance().getViewFactory().getCallPage(receiverName, receiverImg, "calling"), "NL Chat App Call");
+    }
+
     private void scrollToBottom(){
         Platform.runLater(() -> {
             content_chat.layout();
@@ -288,7 +297,7 @@ public class MessageChatSingleBoxController implements Initializable, MessageLis
     public void loadHistoryMessage(){
         if(Model.getInstance().targetClientObjectProperty().get()!=null){
             String targetClientID=Model.getInstance().targetClientObjectProperty().get().getClientID();
-            Model.getInstance().getSocketClient().sendMessage("load_history_single/"+targetClientID);
+            Model.getInstance().getSocketClient().sendMessage("load_history_single|"+targetClientID);
         }
     }
 }

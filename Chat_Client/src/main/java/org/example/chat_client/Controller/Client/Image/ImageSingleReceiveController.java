@@ -28,7 +28,7 @@ public class ImageSingleReceiveController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-
+        download.setOnAction(e-> download());
     }
 
     public void setImage_contain(String imageSend) {
@@ -41,7 +41,7 @@ public class ImageSingleReceiveController implements Initializable {
         this.time_created.setText(time_created);
     }
 
-    public void Download(){
+    public void download(){
         if (imagePath != null) {
             try {
                 URL url = new URL(imagePath);

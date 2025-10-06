@@ -6,9 +6,9 @@ import java.sql.SQLException;
 
 public class ConnectionDB {
     private static Connection con;
-    private static final String url="jdbc:mysql://localhost:3306/nh_chat_app";
+    private static final String url="jdbc:mysql://localhost:3307/hl_chat_app";
     private static final String user="root";
-    private static final String password="";
+    private static final String password="huy123";
     public static Connection getConnectionDB() {
         try {
             con=DriverManager.getConnection(url, user, password);

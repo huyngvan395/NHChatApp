@@ -28,7 +28,7 @@ public class ForgotPassController implements Initializable {
     public void sendCode() {
         if(!email.getText().isEmpty()){
             String emailValue=email.getText();
-            String message="forgot-pass/"+emailValue;
+            String message="forgot-pass|"+emailValue;
             Model.getInstance().getSocketClient().sendMessage(message);
             String messageResponse=Model.getInstance().getSocketClient().receiveResponse();
             System.out.println(messageResponse);

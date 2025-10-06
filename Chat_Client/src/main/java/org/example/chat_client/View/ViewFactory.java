@@ -1,5 +1,6 @@
 package org.example.chat_client.View;
 
+import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXMLLoader;
@@ -7,6 +8,9 @@ import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
+import org.example.chat_client.Controller.Client.Call.CallFormController;
+import org.example.chat_client.Controller.Client.Call.CallPageController;
+import org.example.chat_client.Controller.Client.Call.ReceiveCallPageController;
 import org.example.chat_client.Controller.Client.File.FileGroupReceiveController;
 import org.example.chat_client.Controller.Client.File.FileSendController;
 import org.example.chat_client.Controller.Client.File.FileSingleReceiveController;
@@ -37,6 +41,23 @@ public class ViewFactory {
     public void showClientPage(){
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/FXML/Client/chat_page.fxml"));
         createStage(fxmlLoader);
+    }
+
+    public void showCallForm(AnchorPane contentPane, String title) {
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/FXML/Client/Call/call_form.fxml"));
+            BorderPane form_call = fxmlLoader.load();
+            CallFormController controller = fxmlLoader.getController();
+
+            controller.setForm_call(contentPane);
+
+            Stage stage = new Stage();
+            stage.setTitle(title);
+            stage.setScene(new Scene(form_call));
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void showClientSetting(){
@@ -391,6 +412,41 @@ public class ViewFactory {
         }
         return FileGroupReceive;
     }
+
+//    -------------------call-option-------------------
+
+    private AnchorPane CallPage;
+    private AnchorPane ReceiveCallPage;
+
+    public AnchorPane getCallPage(String userName, String imageAva, String status){
+        try{
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/FXML/Client/Call/call_page.fxml"));
+            CallPage = fxmlLoader.load();
+            CallPageController controller = fxmlLoader.getController();
+            controller.setUser_name(userName);
+            controller.setImg_ava(imageAva);
+            if(status.equals("received-call")){
+                controller.startCallFromOutside();
+            }
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+        return CallPage;
+    }
+
+    public AnchorPane getReceiveCallPage(String userName, String imageAva){
+        try{
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/FXML/Client/Call/receive_call_page.fxml"));
+            ReceiveCallPage = fxmlLoader.load();
+            ReceiveCallPageController controller = fxmlLoader.getController();
+            controller.setImg_ava(imageAva);
+            controller.setUser_name(userName);
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+        return ReceiveCallPage;
+    }
+
 
 
 }

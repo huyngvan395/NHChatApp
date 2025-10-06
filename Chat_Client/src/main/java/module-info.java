@@ -6,6 +6,8 @@ module org.example.chat_client {
     requires org.kordamp.ikonli.javafx;
     requires java.desktop;
     requires com.google.gson;
+    requires webcam.capture;
+    requires javafx.swing;
 
     opens org.example.chat_client.Model to com.google.gson;
     opens org.example.chat_client to javafx.fxml;
@@ -28,4 +30,6 @@ module org.example.chat_client {
     exports org.example.chat_client.Controller.Client.Menu;
     exports org.example.chat_client.Controller.Client.ChatBox;
     opens org.example.chat_client.Controller.Client.ChatBox;
+    exports org.example.chat_client.Controller.Client.Call;
+    opens org.example.chat_client.Controller.Client.Call;
 }

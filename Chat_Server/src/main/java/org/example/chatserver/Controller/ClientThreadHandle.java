@@ -1,5 +1,7 @@
 package org.example.chatserver.Controller;
 
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import org.example.chatserver.Model.Client;
@@ -7,6 +9,7 @@ import org.example.chatserver.Model.Group;
 import org.example.chatserver.Model.Message;
 import org.example.chatserver.Model.Model;
 import org.example.chatserver.Utilities.ChatBotAPI;
+import org.example.chatserver.Utilities.CloudinaryConfig;
 
 import java.io.*;
 import java.net.Socket;
@@ -20,6 +23,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Base64;
 import java.util.List;
+import java.util.Map;
 
 public class ClientThreadHandle implements Runnable{
     private final Socket clientSocket;
@@ -27,16 +31,18 @@ public class ClientThreadHandle implements Runnable{
     private BufferedWriter outText;
     private boolean running;
     private String clientID;
-    private final String directoryImage="server_storage/Image";
-    private final String directoryFile="server_storage/File";
-    private final String directoryImageAvatar="server_storage/Image_Avatar";
-    private final String directoryImageGroup="server_storage/Image_Group";
+    private String clientHost;
+    private final String directoryImage="storage/Image";
+    private final String directoryFile="storage/File";
+    private final String directoryImageAvatar="storage/Image_Avatar";
+    private final String directoryImageGroup="storage/Image_Group";
     private final Gson gson = new Gson();
 
     public ClientThreadHandle(Socket clientSocket) throws IOException {
         this.clientSocket = clientSocket;
         this.running = true;
         this.clientID = "";
+        this.clientHost = "";
     }
 
     @Override
@@ -54,8 +60,8 @@ public class ClientThreadHandle implements Runnable{
             String message;
             while (running && (message = inText.readLine()) != null) {
                 System.out.println(message+"\n");
-                String[] messageParts = message.split("/");
-                String[] messageParts1 = message.split("\\|");
+//                String[] messageParts = message.split("/");
+                String[] messageParts = message.split("\\|");
                 if(message.startsWith("forgot-pass")){
                     handleForgotPass(messageParts);
                 }
@@ -63,16 +69,7 @@ public class ClientThreadHandle implements Runnable{
                     handleLogin(messageParts);
                 }
                 else if(message.startsWith("signup")){
-                    handleSignup(messageParts1);
-                }
-                else if(message.startsWith("single-message")){
-                    handleSingleMessage(messageParts);
-                }
-                else if(message.startsWith("single-file")){
-                    handleSingleFile(messageParts1);
-                }
-                else if(message.startsWith("single-image")){
-                    handleSingleImage(messageParts1);
+                    handleSignup(messageParts);
                 }
                 else if(message.startsWith("change-pass")){
                     handleChangePass(messageParts);
@@ -80,34 +77,10 @@ public class ClientThreadHandle implements Runnable{
                 else if(message.startsWith("update-info")){
                     handleUpdateInfo(messageParts);
                 }
-                else if(message.startsWith("chatbot")){
-                    handleChatBotMessage(messageParts);
-                }
                 else if(message.startsWith("logout")){
                     Model.getInstance().getClientThreadManager().sendRemoveClient("removeClientOnline|"+clientID);
                     Model.getInstance().removeClientOnlineList(clientID);
                     this.clientID="";
-                }
-                else if(message.startsWith("create_group")){
-                    handleCreateGroup(messageParts1);
-                }
-                else if(message.startsWith("group-message")){
-                    handleGroupMessage(messageParts);
-                }
-                else if(message.startsWith("group-file")){
-                    handleGroupFile(messageParts1);
-                }
-                else if(message.startsWith("group-image")){
-                    handleGroupImage(messageParts1);
-                }
-                else if(message.startsWith("load_history_single")){
-                    handleLoadHistorySingle(messageParts);
-                }
-                else if(message.startsWith("load_history_group")){
-                    handleLoadHistoryGroup(messageParts);
-                }
-                else if(message.startsWith("load_history_bot")){
-                    handleLoadHistoryBot(messageParts);
                 }
                 else if(message.startsWith("remove")){
                     running=false;
@@ -124,6 +97,48 @@ public class ClientThreadHandle implements Runnable{
                     Model.getInstance().getClientThreadManager().sendRemoveClient("removeClientInList|"+clientID);
                     Model.getInstance().getClientThreadManager().sendListClient(this);
                     this.clientID="";
+                }
+                else if(message.startsWith("single-message")){
+                    handleSingleMessage(messageParts);
+                }
+                else if(message.startsWith("single-file")){
+                    handleSingleFile(messageParts);
+                }
+                else if(message.startsWith("single-image")){
+                    handleSingleImage(messageParts);
+                }
+                else if(message.startsWith("call-request")){
+                    handleCallRequest(messageParts);
+                }
+                else if (message.startsWith("call-response")){
+                    handleCallResponse(messageParts);
+                }
+                else if (message.startsWith("stop_call")){
+                    handleStopCall(messageParts);
+                }
+                else if(message.startsWith("chatbot")){
+                    handleChatBotMessage(messageParts);
+                }
+                else if(message.startsWith("create_group")){
+                    handleCreateGroup(messageParts);
+                }
+                else if(message.startsWith("group-message")){
+                    handleGroupMessage(messageParts);
+                }
+                else if(message.startsWith("group-file")){
+                    handleGroupFile(messageParts);
+                }
+                else if(message.startsWith("group-image")){
+                    handleGroupImage(messageParts);
+                }
+                else if(message.startsWith("load_history_single")){
+                    handleLoadHistorySingle(messageParts);
+                }
+                else if(message.startsWith("load_history_group")){
+                    handleLoadHistoryGroup(messageParts);
+                }
+                else if(message.startsWith("load_history_bot")){
+                    handleLoadHistoryBot(messageParts);
                 }
             }
         }catch (SocketException e){
@@ -168,6 +183,7 @@ public class ClientThreadHandle implements Runnable{
             String image="";
             if(rs.next()){
                 clientID=rs.getString("ClientID");
+                clientHost = messageParts[3];
                 name=rs.getString("Name");
                 image=rs.getString("Image");
             }
@@ -202,14 +218,17 @@ public class ClientThreadHandle implements Runnable{
             localDir.mkdir();
         }
         byte[] imageBytes=Base64.getDecoder().decode(messageParts[5]);
-        File imageAvatarClient=new File(directoryImageAvatar, messageParts[6]);
-        try{
-            Files.write(imageAvatarClient.toPath(), imageBytes);
-        }catch(IOException e){
-            e.printStackTrace();
-        }
-        Model.getInstance().getAccountDAO().addClient(ID, name, email, password, image);
-        this.writeMessage("signup/" + ID + "/success");
+        Cloudinary cloudinary = CloudinaryConfig.getCloudinary();
+        Map uploadResult = cloudinary.uploader().upload(imageBytes, ObjectUtils.emptyMap());
+        String imageUrl = (String) uploadResult.get("secure_url");
+//        File imageAvatarClient=new File(directoryImageAvatar, messageParts[6]);
+//        try{
+//            Files.write(imageAvatarClient.toPath(), imageBytes);
+//        }catch(IOException e){
+//            e.printStackTrace();
+//        }
+        Model.getInstance().getAccountDAO().addClient(ID, name, email, password, imageUrl);
+        this.writeMessage("signup|" + ID + "|success");
         Model.getInstance().getClientThreadManager().setListClient(this);
     }
 
@@ -217,7 +236,7 @@ public class ClientThreadHandle implements Runnable{
         String messageSendFromClient = messageParts[1];
         String ReceiverID = messageParts[2];
         String timeSend= messageParts[3];
-        String messageSend="single-message/"+ReceiverID+"/"+messageSendFromClient+"/"+timeSend+"/"+clientID;
+        String messageSend="single-message|"+ReceiverID+"|"+messageSendFromClient+"|"+timeSend+"|"+clientID;
         if(!Model.getInstance().getConversationDAO().checkConversationSingleExist(clientID, ReceiverID)){
             Model.getInstance().getConversationDAO().createConversationSingle(clientID, ReceiverID);
         }
@@ -257,20 +276,51 @@ public class ClientThreadHandle implements Runnable{
         String ReceiverID = messageParts[4];
         String timeSend= messageParts[5];
         byte[] imageBytes = Base64.getDecoder().decode(base64Image);
-        File localDir=new File(directoryImage);
-        if(!localDir.exists()){
-            localDir.mkdir();
-        }
-        File imageFile=new File(localDir,nameImage);
-        Files.write(imageFile.toPath(), imageBytes);
+        Cloudinary cloudinary = CloudinaryConfig.getCloudinary();
+        Map uploadResult = cloudinary.uploader().upload(imageBytes, ObjectUtils.emptyMap());
+        String imageUrl = (String) uploadResult.get("secure_url");
+//        File localDir=new File(directoryImage);
+//        if(!localDir.exists()){
+//            localDir.mkdir();
+//        }
+//        File imageFile=new File(localDir,nameImage);
+//        Files.write(imageFile.toPath(), imageBytes);
         String messageSend="single-image|"+ReceiverID+"|"+base64Image+"|"+nameImage+"|"+timeSend+"|"+clientID;
         System.out.println(Model.getInstance().getConversationDAO().checkConversationSingleExist(clientID, ReceiverID));
         if(!Model.getInstance().getConversationDAO().checkConversationSingleExist(clientID, ReceiverID)){
             Model.getInstance().getConversationDAO().createConversationSingle(clientID, ReceiverID);
         }
         String ID=Model.getInstance().getConversationDAO().getConversationSingleID(clientID, ReceiverID);
-        Model.getInstance().getMessageDAO().addMessageSingle(ID, clientID, imagePath, "Image",LocalDateTime.parse(timeSend));
+        Model.getInstance().getMessageDAO().addMessageSingle(ID, clientID, imageUrl, "Image",LocalDateTime.parse(timeSend));
         Model.getInstance().getClientThreadManager().singleChat(ReceiverID, messageSend);
+    }
+
+    public void handleCallRequest(String[] messageParts){
+        String receiverID = messageParts[1];
+        String nameSender = messageParts[2];
+        String imgAvaSender = messageParts[3];
+        if(!Model.getInstance().getConversationDAO().checkConversationSingleExist(clientID, receiverID)){
+            Model.getInstance().getConversationDAO().createConversationSingle(clientID, receiverID);
+        }
+        Model.getInstance().getClientThreadManager().callRequest(receiverID, this.clientHost, this.clientID, nameSender, imgAvaSender);
+    }
+
+    public void handleCallResponse(String[] messageParts){
+        if(messageParts[1].equals("accept")){
+            String receiverID = messageParts[2];
+            String clientName = messageParts[3];
+            String clientAva = messageParts[4];
+            String msg = "call-response|accept|"+clientHost+"|"+clientID+"|"+clientName+"|"+clientAva;
+            Model.getInstance().getClientThreadManager().callResponse(msg,receiverID);
+        }
+        else if (messageParts[1].equals("refuse")){
+            String receiverID = messageParts[2];
+            Model.getInstance().getClientThreadManager().callResponse("call-response|refuse|", receiverID);
+        }
+    }
+
+    public void handleStopCall(String[] messageParts){
+        Model.getInstance().getClientThreadManager().stopCall(messageParts[1]);
     }
 
     public void handleChangePass(String[] messageParts){
@@ -298,7 +348,7 @@ public class ClientThreadHandle implements Runnable{
         String response= ChatBotAPI.sendMessageToAPI(messageFromClient);
         String safeResponse = response.replace("\n", "<br>").replace("\r", " ").replace("*", " ");
         LocalDateTime localDateTime = LocalDateTime.now();
-        String messageResponse= "chatbot_response/"+safeResponse+"/"+localDateTime;
+        String messageResponse= "chatbot_response|"+safeResponse+"|"+localDateTime;
         Model.getInstance().getMessageDAO().addMessageBot(ID,"chatbot",safeResponse,"Text",localDateTime);
         Model.getInstance().getClientThreadManager().chatbot(clientID, messageResponse);
         System.out.println(messageResponse);
@@ -316,24 +366,27 @@ public class ClientThreadHandle implements Runnable{
         for(Client c:listClient){
             Model.getInstance().getConversationDAO().addMemberGroup(IDGroup, c.getClientID());
         }
-        Group group=new Group(IDGroup, nameGroup, imagePath);
+        byte[] imageBytes = Base64.getDecoder().decode(base64Image);
+        Cloudinary cloudinary = CloudinaryConfig.getCloudinary();
+        Map uploadResult = cloudinary.uploader().upload(imageBytes, ObjectUtils.emptyMap());
+        String imageUrl = (String) uploadResult.get("secure_url");
+        Group group=new Group(IDGroup, nameGroup, imageUrl);
         String groupJSon=gson.toJson(group);
         String message=groupJSon+"|"+nameImage+"|"+base64Image;
         Model.getInstance().getClientThreadManager().sendNewGroup(nameGroup, message);
-        byte[] imageBytes = Base64.getDecoder().decode(base64Image);
-        File localDir=new File(directoryImageGroup);
-        if(!localDir.exists()){
-            localDir.mkdir();
-        }
-        File imageFile=new File(localDir,nameImage);
-        Files.write(imageFile.toPath(), imageBytes);
+//        File localDir=new File(directoryImageGroup);
+//        if(!localDir.exists()){
+//            localDir.mkdir();
+//        }
+//        File imageFile=new File(localDir,nameImage);
+//        Files.write(imageFile.toPath(), imageBytes);
     }
 
     public void handleGroupMessage(String[] messageParts) throws IOException{
         String messageSendFromClient= messageParts[1];
         String groupID= messageParts[2];
         String timeSend=messageParts[3];
-        String messageSend="group-message/"+groupID+"/"+messageSendFromClient+"/"+timeSend+"/"+clientID;
+        String messageSend="group-message|"+groupID+"|"+messageSendFromClient+"|"+timeSend+"|"+clientID;
         Model.getInstance().getMessageDAO().addMessageGroup(groupID, clientID, messageSendFromClient, "Text", LocalDateTime.parse(timeSend));
         Model.getInstance().getClientThreadManager().groupChat(groupID, clientID, messageSend);
     }
@@ -345,14 +398,17 @@ public class ClientThreadHandle implements Runnable{
         String groupID = messageParts[4];
         String timeSend= messageParts[5];
         byte[] imageBytes = Base64.getDecoder().decode(base64Image);
-        File localDir=new File(directoryImage);
-        if(!localDir.exists()){
-            localDir.mkdir();
-        }
-        File imageFile=new File(localDir,nameImage);
-        Files.write(imageFile.toPath(), imageBytes);
+        Cloudinary cloudinary = CloudinaryConfig.getCloudinary();
+        Map uploadResult = cloudinary.uploader().upload(imageBytes, ObjectUtils.emptyMap());
+        String imageUrl = (String) uploadResult.get("secure_url");
+//        File localDir=new File(directoryImage);
+//        if(!localDir.exists()){
+//            localDir.mkdir();
+//        }
+//        File imageFile=new File(localDir,nameImage);
+//        Files.write(imageFile.toPath(), imageBytes);
         String messageSend="single-image|"+groupID+"|"+base64Image+"|"+nameImage+"|"+timeSend+"|"+clientID;
-        Model.getInstance().getMessageDAO().addMessageGroup(groupID,clientID,imagePath,"Image",LocalDateTime.parse(timeSend));
+        Model.getInstance().getMessageDAO().addMessageGroup(groupID,clientID,imageUrl,"Image",LocalDateTime.parse(timeSend));
         Model.getInstance().getClientThreadManager().groupChat(groupID,clientID,messageSend);
     }
 

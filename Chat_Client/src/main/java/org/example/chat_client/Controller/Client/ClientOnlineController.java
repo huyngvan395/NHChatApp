@@ -21,7 +21,7 @@ public class ClientOnlineController implements Initializable {
     }
 
     public void setImage_avatar(String imageSend){
-        Image image = new Image(imageSend);
+        Image image = new Image(imageSend,true);
         this.image_avatar.setImage(image);
     }
 

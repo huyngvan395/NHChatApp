@@ -15,6 +15,7 @@ public class Model {
     private static Model model;
     private final ViewFactory viewFactory;
     private final SocketClient socketClient;
+    private final SocketStreaming socketStreaming;
     private ObservableList<Client> clientOnlineList;
     private ObservableList<Client> listClient;
     private ObservableList<Group> groupList;
@@ -24,6 +25,7 @@ public class Model {
     private Client currentClient;
     private volatile boolean running;
     private ObjectProperty<Client> targetClient=new SimpleObjectProperty<>();
+    private ObjectProperty<Caller> targetCall = new SimpleObjectProperty<>();
     private final BlockingQueue<String> messageResponseQueue;
     private final MessageHandler messageHandler;
     private ObjectProperty<Group> targetGroup=new SimpleObjectProperty<>();
@@ -31,6 +33,7 @@ public class Model {
     private Model() throws IOException {
         this.viewFactory = new ViewFactory();
         this.socketClient= new SocketClient();
+        this.socketStreaming = new SocketStreaming();
         this.clientOnlineList= FXCollections.observableArrayList();
         this.listClient=FXCollections.observableArrayList();
         this.groupList=FXCollections.observableArrayList();
@@ -46,6 +49,7 @@ public class Model {
         this.messageHandler.addMessageListener(new MessageSingleLoadListener(messageListSingle));
         this.messageHandler.addMessageListener(new MessageGroupLoadListener(messageListGroup));
         this.messageHandler.addMessageListener(new MessageBotLoadListener(messageListBot));
+        this.messageHandler.addMessageListener(new CallToClientListener());
     }
 
     public static synchronized Model getInstance() {
@@ -65,6 +69,10 @@ public class Model {
 
     public SocketClient getSocketClient() {
         return socketClient;
+    }
+
+    public SocketStreaming getSocketStreaming() {
+        return socketStreaming;
     }
 
     public ObservableList<Client> getClientOnlineList() {
@@ -105,7 +113,6 @@ public class Model {
                 }
             }
         }).start();
-
     }
 
     public void processMessages() {
@@ -145,6 +152,9 @@ public class Model {
         return targetGroup;
     }
 
+    public ObjectProperty<Caller> targetCallObjectProperty(){
+        return targetCall;
+    }
     public void setRunning(boolean running) {
         this.running = running;
     }

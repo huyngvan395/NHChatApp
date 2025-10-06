@@ -15,5 +15,4 @@ public class MessageHandler {
             listener.onMessageReceived(message);
         }
     }
-
 }

@@ -55,6 +55,30 @@ public class ClientThreadManager {
         }
     }
 
+    public void callRequest(String receiverID,String senderHost, String senderID, String senderName, String senderImg){
+        for (ClientThreadHandle clientHandler : clientHandlers) {
+            if(clientHandler.getClientID().equals(receiverID)){
+                clientHandler.writeMessage("call-request|"+senderHost+"|"+senderID+"|"+senderName+"|"+senderImg);
+            }
+        }
+    }
+
+    public void callResponse(String msg, String receiverID){
+        for(ClientThreadHandle clientHandler : clientHandlers){
+            if(clientHandler.getClientID().equals(receiverID)){
+                clientHandler.writeMessage(msg);
+            }
+        }
+    }
+
+    public void stopCall(String receiverID){
+        for (ClientThreadHandle clientThreadHandle: clientHandlers){
+            if(clientThreadHandle.getClientID().equals(receiverID)){
+                clientThreadHandle.writeMessage("stop-call");
+            }
+        }
+    }
+
     public String sendCode(String email){
         String code= SendMail.randomCode();
         SendMail.sendCode(email, code);

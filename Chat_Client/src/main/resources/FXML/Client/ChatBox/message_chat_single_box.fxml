@@ -27,6 +27,11 @@
                <Font name="Arial Bold" size="16.0" />
             </font>
          </Label>
+         <Button fx:id="call_button" layoutX="510.0" layoutY="18.0" mnemonicParsing="false">
+            <graphic>
+               <FontIcon iconLiteral="fas-video" iconSize="25" />
+            </graphic>
+         </Button>
       </AnchorPane>
    </top>
    <bottom>

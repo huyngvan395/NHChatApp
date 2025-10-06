@@ -45,7 +45,7 @@ public class MessageChatBoxBotController implements Initializable, MessageListen
             String timeShow= DateTimeFormatMessage.formatDateTime(localDateTime);
             AnchorPane messageContain= Model.getInstance().getViewFactory().getMessageSend(Enter_message.getText(), timeShow);
             content_chat.getChildren().add(messageContain);
-            Model.getInstance().getSocketClient().sendMessage("chatbot/"+Enter_message.getText()+"/"+Model.getInstance().getCurrentClient().getClientID()+"/"+localDateTime);
+            Model.getInstance().getSocketClient().sendMessage("chatbot|"+Enter_message.getText()+"|"+Model.getInstance().getCurrentClient().getClientID()+"|"+localDateTime);
         }
     }
 
@@ -54,7 +54,7 @@ public class MessageChatBoxBotController implements Initializable, MessageListen
         String currentClientID = Model.getInstance().getCurrentClient().getClientID();
         if(Model.getInstance().isRunning()){
             Platform.runLater(()->{
-                String[] messageParts = message.split("/");
+                String[] messageParts = message.split("\\|");
                 if (message.startsWith("chatbot_response")) {
                     String messageResponse = messageParts[1].replace("<br>","\n");
                     String time_created = messageParts[2];
@@ -87,7 +87,7 @@ public class MessageChatBoxBotController implements Initializable, MessageListen
 
     public void loadHistoryMessage(){
         String currentClientID=Model.getInstance().getCurrentClient().getClientID();
-        Model.getInstance().getSocketClient().sendMessage("load_history_bot/"+currentClientID);
+        Model.getInstance().getSocketClient().sendMessage("load_history_bot|"+currentClientID);
     }
 
     private void scrollToBottom(){
